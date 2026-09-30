@@ -13,6 +13,8 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -23,7 +25,7 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
         await signInWithGoogle();
       } else {
         if (mode === "signup") {
-          await signupWithEmail(email, password);
+          await signupWithEmail(email, password, fullName, phone);
         } else {
           await loginWithEmail(email, password);
         }
@@ -59,12 +61,19 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
             <Tabs
               value={mode}
               onValueChange={(value) => navigate({ to: value === "signup" ? "/signup" : "/login" })}
+              className="w-full"
             >
-              <TabsList className="w-full">
-                <TabsTrigger value="login" className="flex-1">
+              <TabsList className="grid w-full grid-cols-2 rounded-xl bg-muted/50 p-1">
+                <TabsTrigger 
+                  value="login" 
+                  className="rounded-lg py-2.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
                   Sign In
                 </TabsTrigger>
-                <TabsTrigger value="signup" className="flex-1">
+                <TabsTrigger 
+                  value="signup" 
+                  className="rounded-lg py-2.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
                   Sign Up
                 </TabsTrigger>
               </TabsList>
@@ -73,7 +82,7 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
             <Button
               variant="outline"
               size="lg"
-              className="w-full"
+              className="w-full font-semibold shadow-sm transition-all hover:bg-muted/50"
               disabled={loading}
               onClick={() => complete("google")}
             >
@@ -82,7 +91,7 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
 
             <div className="flex items-center gap-3">
               <span className="h-px flex-1 bg-border" />
-              <span className="text-xs text-muted-foreground">Or continue with email</span>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Or continue with email</span>
               <span className="h-px flex-1 bg-border" />
             </div>
 
@@ -93,6 +102,32 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
                 complete("email");
               }}
             >
+              {mode === "signup" && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="fullName">Full Name</Label>
+                    <Input
+                      id="fullName"
+                      type="text"
+                      required
+                      placeholder="Jane Doe"
+                      value={fullName}
+                      onChange={(event) => setFullName(event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      required
+                      placeholder="+1 (555) 000-0000"
+                      value={phone}
+                      onChange={(event) => setPhone(event.target.value)}
+                    />
+                  </div>
+                </>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="email">Business Email</Label>
                 <Input
@@ -130,15 +165,12 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
                   Forgot password?
                 </button>
               </div>
-              <Button type="submit" size="lg" className="w-full" disabled={loading}>
+              <Button type="submit" size="lg" className="w-full font-semibold shadow-md" disabled={loading}>
                 {mode === "signup" ? "Create account" : "Sign in"}
               </Button>
             </form>
           </div>
 
-          <p className="text-center text-xs text-muted-foreground">
-            Demo environment — credentials are stored locally in your browser only.
-          </p>
         </div>
       </main>
     </div>
