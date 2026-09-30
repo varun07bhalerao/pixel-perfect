@@ -36,7 +36,8 @@ export const Route = createFileRoute("/app/analytics")({
 
 function Analytics() {
   const [growth, setGrowth] = useState([12]);
-  const factor = 1 + growth[0] / 100;
+  const growthValue = growth[0] ?? 12;
+  const factor = 1 + growthValue / 100;
   const scenario = forecastSeries.map((point) => ({
     ...point,
     forecast: Math.round(point.forecast * factor),
@@ -64,11 +65,11 @@ function Analytics() {
 
       <Panel
         title="Sales Forecasting"
-        description={`Scenario: ${growth[0]}% growth assumption`}
+        description={`Scenario: ${growthValue}% growth assumption`}
         actions={
           <div className="flex w-52 items-center gap-3">
             <Slider value={growth} onValueChange={setGrowth} min={-10} max={40} step={1} />
-            <span className="w-10 text-xs font-semibold tabular-nums">{growth[0]}%</span>
+            <span className="w-10 text-xs font-semibold tabular-nums">{growthValue}%</span>
           </div>
         }
       >
@@ -107,7 +108,7 @@ function Analytics() {
         <Panel title="Inventory Demand Predictions" description="Next 45 days, by SKU">
           <ul className="space-y-4">
             {products.slice(0, 5).map((product, index) => {
-              const predicted = [96, 74, 61, 48, 33][index];
+              const predicted = [96, 74, 61, 48, 33][index] ?? 50;
               return (
                 <li key={product.sku} className="space-y-2">
                   <div className="flex items-center justify-between gap-3">

@@ -20,7 +20,9 @@ export const Route = createFileRoute("/app/workflows")({
 });
 
 function Workflows() {
-  const [state, setState] = useState(() => Object.fromEntries(workflows.map((w) => [w.id, w.enabled])));
+  const [state, setState] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(workflows.map((w) => [w.id, w.enabled])),
+  );
   const activeCount = Object.values(state).filter(Boolean).length;
 
   return (
@@ -67,7 +69,7 @@ function Workflows() {
                   Execute Now
                 </Button>
                 <Switch
-                  checked={state[workflow.id]}
+                  checked={state[workflow.id] ?? false}
                   onCheckedChange={(checked) => {
                     setState((prev) => ({ ...prev, [workflow.id]: checked }));
                     toast.success(`${workflow.id} ${checked ? "activated" : "paused"}.`);
