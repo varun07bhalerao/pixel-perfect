@@ -1,5 +1,43 @@
-const SESSION_KEY = "smartbpi.session";
-const ONBOARDING_KEY = "smartbpi.onboarding";
+import { initializeApp } from "firebase/app";
+import { 
+  getAuth, 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  GoogleAuthProvider, 
+  signInWithPopup, 
+  signOut as firebaseSignOut,
+  onAuthStateChanged,
+  type User
+} from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy-api-key",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dummy-auth-domain",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "dummy-project-id",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "dummy-storage-bucket",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "dummy-sender-id",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "dummy-app-id"
+};
+
+const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+export async function signInWithGoogle() {
+  return signInWithPopup(auth, googleProvider);
+}
+
+export async function loginWithEmail(email: string, password: string) {
+  return signInWithEmailAndPassword(auth, email, password);
+}
+
+export async function signupWithEmail(email: string, password: string) {
+  return createUserWithEmailAndPassword(auth, email, password);
+}
+
+export async function signOut() {
+  return firebaseSignOut(auth);
+}
 
 export type MockSession = {
   email: string;
@@ -7,6 +45,21 @@ export type MockSession = {
   provider: "email" | "google";
 };
 
+export function onAuthStateChange(callback: (session: MockSession | null) => void) {
+  return onAuthStateChanged(auth, (user: User | null) => {
+    if (user) {
+      callback({
+        email: user.email || "",
+        name: user.displayName || nameFromEmail(user.email || ""),
+        provider: user.providerData.some(p => p.providerId === "google.com") ? "google" : "email"
+      });
+    } else {
+      callback(null);
+    }
+  });
+}
+
+const ONBOARDING_KEY = "smartbpi.onboarding";
 export type OnboardingProfile = {
   businessName: string;
   industry: string;
@@ -27,19 +80,6 @@ function safeParse<T>(raw: string | null): T | null {
   } catch {
     return null;
   }
-}
-
-export function getSession(): MockSession | null {
-  if (typeof window === "undefined") return null;
-  return safeParse<MockSession>(window.localStorage.getItem(SESSION_KEY));
-}
-
-export function signIn(session: MockSession) {
-  window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-}
-
-export function signOut() {
-  window.localStorage.removeItem(SESSION_KEY);
 }
 
 export function getOnboarding(): OnboardingProfile | null {

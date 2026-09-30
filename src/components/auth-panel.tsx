@@ -7,17 +7,34 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrandBadge, GoogleMark } from "@/components/brand";
-import { nameFromEmail, signIn } from "@/lib/auth";
+import { loginWithEmail, signupWithEmail, signInWithGoogle } from "@/lib/auth";
 
 export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function complete(provider: "email" | "google", address: string) {
-    signIn({ email: address, name: nameFromEmail(address), provider });
-    toast.success(mode === "signup" ? "Account created" : "Welcome back");
-    navigate({ to: "/onboarding" });
+  const [loading, setLoading] = useState(false);
+
+  async function complete(provider: "email" | "google") {
+    setLoading(true);
+    try {
+      if (provider === "google") {
+        await signInWithGoogle();
+      } else {
+        if (mode === "signup") {
+          await signupWithEmail(email, password);
+        } else {
+          await loginWithEmail(email, password);
+        }
+      }
+      toast.success(mode === "signup" ? "Account created" : "Welcome back");
+      navigate({ to: "/onboarding" });
+    } catch (error: any) {
+      toast.error(error.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -57,7 +74,8 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
               variant="outline"
               size="lg"
               className="w-full"
-              onClick={() => complete("google", email || "operator@company.com")}
+              disabled={loading}
+              onClick={() => complete("google")}
             >
               <GoogleMark /> Continue with Google
             </Button>
@@ -72,7 +90,7 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
               className="space-y-4"
               onSubmit={(event) => {
                 event.preventDefault();
-                complete("email", email);
+                complete("email");
               }}
             >
               <div className="space-y-2">
@@ -112,7 +130,7 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
                   Forgot password?
                 </button>
               </div>
-              <Button type="submit" size="lg" className="w-full">
+              <Button type="submit" size="lg" className="w-full" disabled={loading}>
                 {mode === "signup" ? "Create account" : "Sign in"}
               </Button>
             </form>
