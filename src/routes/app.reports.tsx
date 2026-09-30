@@ -27,7 +27,7 @@ const recent = [
 ];
 
 function Reports() {
-  const [selected, setSelected] = useState(reportTypes[0].name);
+  const [selected, setSelected] = useState(reportTypes[0]?.name ?? "Sales performance");
   const [from, setFrom] = useState("2026-07-01");
   const [to, setTo] = useState("2026-09-30");
 
