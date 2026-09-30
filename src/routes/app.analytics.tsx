@@ -36,7 +36,8 @@ export const Route = createFileRoute("/app/analytics")({
 
 function Analytics() {
   const [growth, setGrowth] = useState([12]);
-  const factor = 1 + growth[0] / 100;
+  const growthValue = growth[0] ?? 12;
+  const factor = 1 + growthValue / 100;
   const scenario = forecastSeries.map((point) => ({
     ...point,
     forecast: Math.round(point.forecast * factor),
