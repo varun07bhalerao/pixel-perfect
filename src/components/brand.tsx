@@ -8,7 +8,7 @@ export function BrandBadge({ to = "/" }: { to?: string }) {
         <Hexagon className="size-5" strokeWidth={2.4} />
       </span>
       <span className="leading-tight">
-        <span className="block text-sm font-extrabold tracking-tight">SmartBPI</span>
+        <span className="block font-display text-sm font-extrabold tracking-tight">SmartBPI</span>
         <span className="block text-[11px] font-medium text-muted-foreground">AI Business OS</span>
       </span>
     </Link>
