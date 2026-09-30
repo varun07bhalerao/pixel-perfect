@@ -1,9 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Download } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatCard, StatusPill, toneForStatus } from "@/components/app-ui";
 import { currency, payables, plSummary, receivables, revenueSeries } from "@/lib/mock-data";
 
@@ -11,7 +26,10 @@ export const Route = createFileRoute("/app/finance")({
   head: () => ({
     meta: [
       { title: "Finance Management — SmartBPI" },
-      { name: "description", content: "Receivables, payables, invoice ledger, P&L summary and cash-flow monitoring." },
+      {
+        name: "description",
+        content: "Receivables, payables, invoice ledger, P&L summary and cash-flow monitoring.",
+      },
       { property: "og:title", content: "Finance Management — SmartBPI" },
       { property: "og:description", content: "See cash, margin and obligations on one screen." },
     ],
@@ -41,12 +59,22 @@ function Finance() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <Panel title="Cash-flow Monitoring" description="Revenue, expenses and net position" className="xl:col-span-2">
+        <Panel
+          title="Cash-flow Monitoring"
+          description="Revenue, expenses and net position"
+          className="xl:col-span-2"
+        >
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueSeries} margin={{ left: -12, right: 8, top: 8 }}>
                 <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="month" stroke="var(--color-muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis
+                  dataKey="month"
+                  stroke="var(--color-muted-foreground)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <YAxis
                   stroke="var(--color-muted-foreground)"
                   fontSize={12}
@@ -55,11 +83,31 @@ function Finance() {
                   tickFormatter={(value: number) => `$${Math.round(value / 1000)}K`}
                 />
                 <Tooltip
-                  contentStyle={{ borderRadius: 12, border: "1px solid var(--color-border)", fontSize: 12 }}
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid var(--color-border)",
+                    fontSize: 12,
+                  }}
                   formatter={(value: number) => currency(value)}
                 />
-                <Area type="monotone" dataKey="cash" name="Net cash" stroke="var(--color-chart-2)" fill="var(--color-chart-2)" fillOpacity={0.14} strokeWidth={2.5} />
-                <Area type="monotone" dataKey="expenses" name="Expenses" stroke="var(--color-chart-3)" fill="transparent" strokeWidth={2} strokeDasharray="5 4" />
+                <Area
+                  type="monotone"
+                  dataKey="cash"
+                  name="Net cash"
+                  stroke="var(--color-chart-2)"
+                  fill="var(--color-chart-2)"
+                  fillOpacity={0.14}
+                  strokeWidth={2.5}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="expenses"
+                  name="Expenses"
+                  stroke="var(--color-chart-3)"
+                  fill="transparent"
+                  strokeWidth={2}
+                  strokeDasharray="5 4"
+                />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -78,7 +126,11 @@ function Finance() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Panel title="Accounts Receivable" description="Invoice ledger — money in" bodyClassName="p-0">
+        <Panel
+          title="Accounts Receivable"
+          description="Invoice ledger — money in"
+          bodyClassName="p-0"
+        >
           <Table>
             <TableHeader>
               <TableRow>

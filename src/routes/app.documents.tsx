@@ -3,7 +3,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CheckCircle2, FileText, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatusPill } from "@/components/app-ui";
 import { currency, extractedInvoice } from "@/lib/mock-data";
 
@@ -11,9 +18,15 @@ export const Route = createFileRoute("/app/documents")({
   head: () => ({
     meta: [
       { title: "Document Intelligence — SmartBPI" },
-      { name: "description", content: "Upload invoices, bills and receipts and review extracted fields before posting." },
+      {
+        name: "description",
+        content: "Upload invoices, bills and receipts and review extracted fields before posting.",
+      },
       { property: "og:title", content: "Document Intelligence — SmartBPI" },
-      { property: "og:description", content: "Turn paperwork into ledger rows in one review pass." },
+      {
+        property: "og:description",
+        content: "Turn paperwork into ledger rows in one review pass.",
+      },
     ],
   }),
   component: Documents,
@@ -58,7 +71,11 @@ function Documents() {
               <UploadCloud className="size-7 text-primary" />
               <p className="mt-3 text-sm font-semibold">Drag & drop files here</p>
               <p className="mt-1 text-xs text-muted-foreground">PDF, PNG or JPG · up to 10 MB</p>
-              <Button variant="outline" className="mt-4" onClick={() => toast.success("Sample invoice uploaded.")}>
+              <Button
+                variant="outline"
+                className="mt-4"
+                onClick={() => toast.success("Sample invoice uploaded.")}
+              >
                 Browse files
               </Button>
             </div>
@@ -75,7 +92,9 @@ function Documents() {
                       <p className="text-xs text-muted-foreground">{item.type}</p>
                     </div>
                   </div>
-                  <StatusPill tone={item.status === "Extracted" ? "success" : "warning"}>{item.status}</StatusPill>
+                  <StatusPill tone={item.status === "Extracted" ? "success" : "warning"}>
+                    {item.status}
+                  </StatusPill>
                 </li>
               ))}
             </ul>
@@ -113,7 +132,9 @@ function Documents() {
               ["Confidence", "98.2%"],
             ].map(([label, value]) => (
               <div key={label} className="rounded-lg border border-border bg-canvas px-4 py-3">
-                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
+                <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  {label}
+                </p>
                 <p className="mt-1 text-sm font-semibold">{value}</p>
               </div>
             ))}
@@ -135,7 +156,9 @@ function Documents() {
                     <TableCell className="font-medium">{item.description}</TableCell>
                     <TableCell className="text-right tabular-nums">{item.qty}</TableCell>
                     <TableCell className="text-right tabular-nums">{currency(item.unit)}</TableCell>
-                    <TableCell className="text-right tabular-nums">{currency(item.total)}</TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {currency(item.total)}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -3,7 +3,14 @@ import { toast } from "sonner";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatCard, StatusPill, toneForStatus } from "@/components/app-ui";
 import { currency, customers, orders } from "@/lib/mock-data";
 
@@ -11,7 +18,10 @@ export const Route = createFileRoute("/app/crm")({
   head: () => ({
     meta: [
       { title: "CRM & Customer Intelligence — SmartBPI" },
-      { name: "description", content: "Customer profiles, segments, purchase history and predicted churn risk." },
+      {
+        name: "description",
+        content: "Customer profiles, segments, purchase history and predicted churn risk.",
+      },
       { property: "og:title", content: "CRM & Customer Intelligence — SmartBPI" },
       { property: "og:description", content: "Know which accounts to grow and which to save." },
     ],
@@ -66,7 +76,11 @@ function Crm() {
                   <div className="space-y-1.5">
                     <p
                       className={`text-xs font-semibold ${
-                        customer.churn > 60 ? "text-destructive" : customer.churn > 35 ? "text-warning-foreground" : "text-success-foreground"
+                        customer.churn > 60
+                          ? "text-destructive"
+                          : customer.churn > 35
+                            ? "text-warning-foreground"
+                            : "text-success-foreground"
                       }`}
                     >
                       {customer.churn}%
@@ -101,7 +115,12 @@ function Crm() {
           </ul>
         </Panel>
 
-        <Panel title="Recent Purchase History" description="Across all accounts" className="xl:col-span-2" bodyClassName="p-0">
+        <Panel
+          title="Recent Purchase History"
+          description="Across all accounts"
+          className="xl:col-span-2"
+          bodyClassName="p-0"
+        >
           <Table>
             <TableHeader>
               <TableRow>
@@ -118,7 +137,9 @@ function Crm() {
                   <TableCell className="font-medium">{order.id}</TableCell>
                   <TableCell>{order.customer}</TableCell>
                   <TableCell className="text-muted-foreground">{order.date}</TableCell>
-                  <TableCell className="text-right tabular-nums">{currency(order.amount)}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {currency(order.amount)}
+                  </TableCell>
                   <TableCell>
                     <StatusPill tone={toneForStatus(order.status)}>{order.status}</StatusPill>
                   </TableCell>

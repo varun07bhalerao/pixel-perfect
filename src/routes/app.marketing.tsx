@@ -3,7 +3,14 @@ import { toast } from "sonner";
 import { Rocket } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatCard, StatusPill } from "@/components/app-ui";
 import { campaigns, currency } from "@/lib/mock-data";
 
@@ -11,7 +18,10 @@ export const Route = createFileRoute("/app/marketing")({
   head: () => ({
     meta: [
       { title: "Marketing Intelligence — SmartBPI" },
-      { name: "description", content: "Campaign performance, customer acquisition cost, conversion and marketing ROI." },
+      {
+        name: "description",
+        content: "Campaign performance, customer acquisition cost, conversion and marketing ROI.",
+      },
       { property: "og:title", content: "Marketing Intelligence — SmartBPI" },
       { property: "og:description", content: "Move budget to the channels that actually return." },
     ],
@@ -27,7 +37,9 @@ function Marketing() {
         title="Marketing Intelligence"
         description="Channel-level spend efficiency across Google Ads, Meta and email lifecycle programs."
         actions={
-          <Button onClick={() => toast.success("Budget reallocation simulated: +12% to Google Ads.")}>
+          <Button
+            onClick={() => toast.success("Budget reallocation simulated: +12% to Google Ads.")}
+          >
             <Rocket className="size-4" /> Apply AI budget shift
           </Button>
         }
@@ -46,11 +58,38 @@ function Marketing() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={campaigns} margin={{ left: -12, right: 8, top: 8 }}>
                 <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="channel" stroke="var(--color-muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="var(--color-muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid var(--color-border)", fontSize: 12 }} />
-                <Bar dataKey="spend" name="Spend ($)" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} />
-                <Bar dataKey="leads" name="Leads" fill="var(--color-chart-2)" radius={[6, 6, 0, 0]} />
+                <XAxis
+                  dataKey="channel"
+                  stroke="var(--color-muted-foreground)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  stroke="var(--color-muted-foreground)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid var(--color-border)",
+                    fontSize: 12,
+                  }}
+                />
+                <Bar
+                  dataKey="spend"
+                  name="Spend ($)"
+                  fill="var(--color-chart-1)"
+                  radius={[6, 6, 0, 0]}
+                />
+                <Bar
+                  dataKey="leads"
+                  name="Leads"
+                  fill="var(--color-chart-2)"
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -62,7 +101,15 @@ function Marketing() {
               <li key={campaign.name} className="rounded-lg border border-border p-4">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold">{campaign.channel}</p>
-                  <StatusPill tone={parseFloat(campaign.roi) >= 3 ? "success" : parseFloat(campaign.roi) >= 2 ? "warning" : "danger"}>
+                  <StatusPill
+                    tone={
+                      parseFloat(campaign.roi) >= 3
+                        ? "success"
+                        : parseFloat(campaign.roi) >= 2
+                          ? "warning"
+                          : "danger"
+                    }
+                  >
                     {campaign.roi}
                   </StatusPill>
                 </div>
@@ -91,12 +138,18 @@ function Marketing() {
               <TableRow key={campaign.name}>
                 <TableCell className="font-medium">{campaign.name}</TableCell>
                 <TableCell className="text-muted-foreground">{campaign.channel}</TableCell>
-                <TableCell className="text-right tabular-nums">{currency(campaign.spend)}</TableCell>
-                <TableCell className="text-right tabular-nums">{campaign.leads.toLocaleString()}</TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {currency(campaign.spend)}
+                </TableCell>
+                <TableCell className="text-right tabular-nums">
+                  {campaign.leads.toLocaleString()}
+                </TableCell>
                 <TableCell className="text-right tabular-nums">${campaign.cac}</TableCell>
                 <TableCell className="text-right tabular-nums">{campaign.conv}</TableCell>
                 <TableCell>
-                  <StatusPill tone={parseFloat(campaign.roi) >= 3 ? "success" : "warning"}>{campaign.roi}</StatusPill>
+                  <StatusPill tone={parseFloat(campaign.roi) >= 3 ? "success" : "warning"}>
+                    {campaign.roi}
+                  </StatusPill>
                 </TableCell>
               </TableRow>
             ))}

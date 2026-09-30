@@ -79,7 +79,9 @@ export function StatCard({
           <span
             className={cn(
               "inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-semibold",
-              trend === "up" ? "bg-success-soft text-success-foreground" : "bg-warning-soft text-warning-foreground",
+              trend === "up"
+                ? "bg-success-soft text-success-foreground"
+                : "bg-warning-soft text-warning-foreground",
             )}
           >
             <Icon className="size-3" />
@@ -117,9 +119,28 @@ export function StatusPill({ children, tone = "neutral" }: { children: ReactNode
 
 export function toneForStatus(status: string): Tone {
   const value = status.toLowerCase();
-  if (["paid", "received", "active", "enforced", "stable", "low", "compliant"].some((s) => value.includes(s))) return "success";
-  if (["pending", "in transit", "scheduled", "processing", "medium", "monitoring", "rising", "draft"].some((s) => value.includes(s)))
+  if (
+    ["paid", "received", "active", "enforced", "stable", "low", "compliant"].some((s) =>
+      value.includes(s),
+    )
+  )
+    return "success";
+  if (
+    [
+      "pending",
+      "in transit",
+      "scheduled",
+      "processing",
+      "medium",
+      "monitoring",
+      "rising",
+      "draft",
+    ].some((s) => value.includes(s))
+  )
     return "warning";
-  if (["overdue", "critical", "high", "at-risk", "reject", "surging"].some((s) => value.includes(s))) return "danger";
+  if (
+    ["overdue", "critical", "high", "at-risk", "reject", "surging"].some((s) => value.includes(s))
+  )
+    return "danger";
   return "neutral";
 }

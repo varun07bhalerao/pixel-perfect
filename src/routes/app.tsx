@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
-import { getOnboarding, onAuthStateChange, type MockSession, type OnboardingProfile } from "@/lib/auth";
+import {
+  getOnboarding,
+  onAuthStateChange,
+  type MockSession,
+  type OnboardingProfile,
+} from "@/lib/auth";
 
 export const Route = createFileRoute("/app")({
   ssr: false,

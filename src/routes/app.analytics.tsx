@@ -18,7 +18,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatCard, StatusPill, toneForStatus } from "@/components/app-ui";
 import { anomalies, churnRadar, currency, forecastSeries, products } from "@/lib/mock-data";
 
@@ -26,9 +33,16 @@ export const Route = createFileRoute("/app/analytics")({
   head: () => ({
     meta: [
       { title: "AI & Analytics Engine — SmartBPI" },
-      { name: "description", content: "Sales forecasting, inventory demand prediction, churn radar and anomaly detection." },
+      {
+        name: "description",
+        content:
+          "Sales forecasting, inventory demand prediction, churn radar and anomaly detection.",
+      },
       { property: "og:title", content: "AI & Analytics Engine — SmartBPI" },
-      { property: "og:description", content: "Simulate predictive scenarios before you commit budget." },
+      {
+        property: "og:description",
+        content: "Simulate predictive scenarios before you commit budget.",
+      },
     ],
   }),
   component: Analytics,
@@ -57,10 +71,26 @@ function Analytics() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Forecast accuracy" value="93.4%" change="+1.8%" hint="Backtested 12 months" />
-        <StatCard label="Demand model drift" value="Low" change="-0.4%" hint="Retrained 3 days ago" />
+        <StatCard
+          label="Forecast accuracy"
+          value="93.4%"
+          change="+1.8%"
+          hint="Backtested 12 months"
+        />
+        <StatCard
+          label="Demand model drift"
+          value="Low"
+          change="-0.4%"
+          hint="Retrained 3 days ago"
+        />
         <StatCard label="Churn recall" value="88%" change="+2.2%" hint="At 60% threshold" />
-        <StatCard label="Anomalies flagged" value="14" change="+3" trend="down" hint="Last 7 days" />
+        <StatCard
+          label="Anomalies flagged"
+          value="14"
+          change="+3"
+          trend="down"
+          hint="Last 7 days"
+        />
       </div>
 
       <Panel
@@ -77,7 +107,13 @@ function Analytics() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={scenario} margin={{ left: -12, right: 8, top: 8 }}>
               <CartesianGrid stroke="var(--color-border)" vertical={false} />
-              <XAxis dataKey="month" stroke="var(--color-muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+              <XAxis
+                dataKey="month"
+                stroke="var(--color-muted-foreground)"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+              />
               <YAxis
                 stroke="var(--color-muted-foreground)"
                 fontSize={12}
@@ -86,10 +122,21 @@ function Analytics() {
                 tickFormatter={(value: number) => `$${Math.round(value / 1000)}K`}
               />
               <Tooltip
-                contentStyle={{ borderRadius: 12, border: "1px solid var(--color-border)", fontSize: 12 }}
+                contentStyle={{
+                  borderRadius: 12,
+                  border: "1px solid var(--color-border)",
+                  fontSize: 12,
+                }}
                 formatter={(value: number) => currency(value)}
               />
-              <Line type="monotone" dataKey="actual" name="Actual" stroke="var(--color-chart-1)" strokeWidth={2.5} dot />
+              <Line
+                type="monotone"
+                dataKey="actual"
+                name="Actual"
+                stroke="var(--color-chart-1)"
+                strokeWidth={2.5}
+                dot
+              />
               <Line
                 type="monotone"
                 dataKey="forecast"
@@ -130,16 +177,35 @@ function Analytics() {
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={churnRadar} outerRadius="72%">
                 <PolarGrid stroke="var(--color-border)" />
-                <PolarAngleAxis dataKey="account" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid var(--color-border)", fontSize: 12 }} />
-                <Radar name="Churn risk %" dataKey="risk" stroke="var(--color-chart-1)" fill="var(--color-chart-1)" fillOpacity={0.28} />
+                <PolarAngleAxis
+                  dataKey="account"
+                  tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid var(--color-border)",
+                    fontSize: 12,
+                  }}
+                />
+                <Radar
+                  name="Churn risk %"
+                  dataKey="risk"
+                  stroke="var(--color-chart-1)"
+                  fill="var(--color-chart-1)"
+                  fillOpacity={0.28}
+                />
               </RadarChart>
             </ResponsiveContainer>
           </div>
         </Panel>
       </div>
 
-      <Panel title="Anomaly & Fraud Detection" description="Model-flagged events awaiting review" bodyClassName="p-0">
+      <Panel
+        title="Anomaly & Fraud Detection"
+        description="Model-flagged events awaiting review"
+        bodyClassName="p-0"
+      >
         <Table>
           <TableHeader>
             <TableRow>

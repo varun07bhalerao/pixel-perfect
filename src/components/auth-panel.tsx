@@ -7,7 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrandBadge, GoogleMark } from "@/components/brand";
-import { loginWithEmail, signupWithEmail, signInWithGoogle } from "@/lib/auth";
+import {
+  loginWithEmail,
+  signupWithEmail,
+  signInWithGoogle,
+  isOnboardingCompleted,
+} from "@/lib/auth";
 
 export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
   const navigate = useNavigate();
@@ -21,19 +26,29 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
   async function complete(provider: "email" | "google") {
     setLoading(true);
     try {
+      let userUid = "";
       if (provider === "google") {
-        await signInWithGoogle();
+        const result = await signInWithGoogle();
+        userUid = result.user.uid;
       } else {
         if (mode === "signup") {
-          await signupWithEmail(email, password, fullName, phone);
+          const result = await signupWithEmail(email, password, fullName, phone);
+          userUid = result.user.uid;
         } else {
-          await loginWithEmail(email, password);
+          const result = await loginWithEmail(email, password);
+          userUid = result.user.uid;
         }
       }
       toast.success(mode === "signup" ? "Account created" : "Welcome back");
-      navigate({ to: "/onboarding" });
-    } catch (error: any) {
-      toast.error(error.message || "Authentication failed");
+
+      const isDone = await isOnboardingCompleted(userUid);
+      if (isDone) {
+        navigate({ to: "/app/dashboard" });
+      } else {
+        navigate({ to: "/onboarding" });
+      }
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -64,14 +79,14 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
               className="w-full"
             >
               <TabsList className="grid w-full grid-cols-2 rounded-xl bg-muted/50 p-1">
-                <TabsTrigger 
-                  value="login" 
+                <TabsTrigger
+                  value="login"
                   className="rounded-lg py-2.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
                 >
                   Sign In
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="signup" 
+                <TabsTrigger
+                  value="signup"
                   className="rounded-lg py-2.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-primary data-[state=active]:shadow-sm"
                 >
                   Sign Up
@@ -91,7 +106,9 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
 
             <div className="flex items-center gap-3">
               <span className="h-px flex-1 bg-border" />
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Or continue with email</span>
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Or continue with email
+              </span>
               <span className="h-px flex-1 bg-border" />
             </div>
 
@@ -165,12 +182,16 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
                   Forgot password?
                 </button>
               </div>
-              <Button type="submit" size="lg" className="w-full font-semibold shadow-md" disabled={loading}>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full font-semibold shadow-md"
+                disabled={loading}
+              >
                 {mode === "signup" ? "Create account" : "Sign in"}
               </Button>
             </form>
           </div>
-
         </div>
       </main>
     </div>

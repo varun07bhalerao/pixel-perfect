@@ -3,7 +3,14 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatCard, StatusPill, toneForStatus } from "@/components/app-ui";
 import { approvalQueue, currency, policyRules } from "@/lib/mock-data";
 
@@ -11,9 +18,15 @@ export const Route = createFileRoute("/app/approvals")({
   head: () => ({
     meta: [
       { title: "Decision & Approval Engine — SmartBPI" },
-      { name: "description", content: "Policy limits, automated decisions and the human approval queue." },
+      {
+        name: "description",
+        content: "Policy limits, automated decisions and the human approval queue.",
+      },
       { property: "og:title", content: "Decision & Approval Engine — SmartBPI" },
-      { property: "og:description", content: "Everything above policy stops here for a human call." },
+      {
+        property: "og:description",
+        content: "Everything above policy stops here for a human call.",
+      },
     ],
   }),
   component: Approvals,
@@ -37,13 +50,27 @@ function Approvals() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Awaiting decision" value={String(pending.length)} change={`${Object.keys(decisions).length} cleared`} hint="Human queue" />
+        <StatCard
+          label="Awaiting decision"
+          value={String(pending.length)}
+          change={`${Object.keys(decisions).length} cleared`}
+          hint="Human queue"
+        />
         <StatCard label="Auto-approved today" value="46" change="+9" hint="Within policy" />
-        <StatCard label="Policy rules" value={String(policyRules.length)} change="All active" hint="Governance layer" />
+        <StatCard
+          label="Policy rules"
+          value={String(policyRules.length)}
+          change="All active"
+          hint="Governance layer"
+        />
         <StatCard label="Avg. decision time" value="3.2 h" change="-1.1 h" hint="Last 30 days" />
       </div>
 
-      <Panel title="Policy Limit Rules" description="Configured during onboarding" bodyClassName="p-0">
+      <Panel
+        title="Policy Limit Rules"
+        description="Configured during onboarding"
+        bodyClassName="p-0"
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -68,7 +95,11 @@ function Approvals() {
         </Table>
       </Panel>
 
-      <Panel title="Pending Human Approval" description="Approve or reject — the queue updates instantly" bodyClassName="p-0">
+      <Panel
+        title="Pending Human Approval"
+        description="Approve or reject — the queue updates instantly"
+        bodyClassName="p-0"
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -92,10 +123,16 @@ function Approvals() {
                   <TableCell className="text-muted-foreground">{item.requester}</TableCell>
                   <TableCell className="text-right">
                     {decision ? (
-                      <StatusPill tone={decision === "Approved" ? "success" : "danger"}>{decision}</StatusPill>
+                      <StatusPill tone={decision === "Approved" ? "success" : "danger"}>
+                        {decision}
+                      </StatusPill>
                     ) : (
                       <div className="flex justify-end gap-2">
-                        <Button size="sm" className="h-7 px-2.5 text-xs" onClick={() => decide(item.id, item.request, "Approved")}>
+                        <Button
+                          size="sm"
+                          className="h-7 px-2.5 text-xs"
+                          onClick={() => decide(item.id, item.request, "Approved")}
+                        >
                           <Check className="size-3" /> Approve
                         </Button>
                         <Button

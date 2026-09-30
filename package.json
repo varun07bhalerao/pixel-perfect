@@ -52,7 +52,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
-    "firebase": "^12.19.0",
+    "firebase": "^9.14.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.575.0",
     "react": "^19.2.0",
@@ -87,5 +87,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
     "vite": "8.1.5"
+  },
+  "optionalDependencies": {
+    "@rolldown/binding-win32-x64-msvc": "file:rolldown-binding-win32-x64-msvc-1.2.1.tgz"
   }
 }

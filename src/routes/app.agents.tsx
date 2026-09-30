@@ -9,9 +9,16 @@ export const Route = createFileRoute("/app/agents")({
   head: () => ({
     meta: [
       { title: "Multi-Agent AI System — SmartBPI" },
-      { name: "description", content: "Autonomous agents for management, analysis, finance, inventory, marketing and workflows." },
+      {
+        name: "description",
+        content:
+          "Autonomous agents for management, analysis, finance, inventory, marketing and workflows.",
+      },
       { property: "og:title", content: "Multi-Agent AI System — SmartBPI" },
-      { property: "og:description", content: "Six specialist agents working your backlog with a full audit log." },
+      {
+        property: "og:description",
+        content: "Six specialist agents working your backlog with a full audit log.",
+      },
     ],
   }),
   component: Agents,

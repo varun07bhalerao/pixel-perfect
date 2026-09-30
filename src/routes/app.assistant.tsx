@@ -3,7 +3,14 @@ import { useState } from "react";
 import { Send, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatusPill } from "@/components/app-ui";
 import { assistantAnswers, assistantPrompts } from "@/lib/mock-data";
 
@@ -11,9 +18,15 @@ export const Route = createFileRoute("/app/assistant")({
   head: () => ({
     meta: [
       { title: "AI Business Assistant — SmartBPI" },
-      { name: "description", content: "Ask business questions and get structured answers with supporting data tables." },
+      {
+        name: "description",
+        content: "Ask business questions and get structured answers with supporting data tables.",
+      },
       { property: "og:title", content: "AI Business Assistant — SmartBPI" },
-      { property: "og:description", content: "Conversational answers grounded in your operational data." },
+      {
+        property: "og:description",
+        content: "Conversational answers grounded in your operational data.",
+      },
     ],
   }),
   component: Assistant,
@@ -79,7 +92,9 @@ function Assistant() {
                     <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-accent-foreground">
                       <Sparkles className="size-3.5" />
                     </span>
-                    <p className="rounded-2xl rounded-tl-sm border border-border bg-canvas px-4 py-2.5 text-sm">{message.text}</p>
+                    <p className="rounded-2xl rounded-tl-sm border border-border bg-canvas px-4 py-2.5 text-sm">
+                      {message.text}
+                    </p>
                   </div>
                   {message.answer ? (
                     <div className="ml-10 space-y-2">
@@ -96,7 +111,10 @@ function Assistant() {
                             {message.answer.table.rows.map((row) => (
                               <TableRow key={row.join("-")}>
                                 {row.map((cell, cellIndex) => (
-                                  <TableCell key={cellIndex} className={cellIndex === 0 ? "font-medium" : "tabular-nums"}>
+                                  <TableCell
+                                    key={cellIndex}
+                                    className={cellIndex === 0 ? "font-medium" : "tabular-nums"}
+                                  >
                                     {cell}
                                   </TableCell>
                                 ))}
@@ -133,7 +151,11 @@ function Assistant() {
               if (draft.trim()) ask(draft.trim());
             }}
           >
-            <Input value={draft} onChange={(event) => setDraft(event.target.value)} placeholder="Ask about revenue, stock, cash or customers…" />
+            <Input
+              value={draft}
+              onChange={(event) => setDraft(event.target.value)}
+              placeholder="Ask about revenue, stock, cash or customers…"
+            />
             <Button type="submit" size="icon" aria-label="Send">
               <Send className="size-4" />
             </Button>

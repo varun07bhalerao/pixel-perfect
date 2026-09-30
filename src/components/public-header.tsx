@@ -73,7 +73,15 @@ export function PublicFooter() {
             The autonomous operating layer for revenue, inventory, finance and customer decisions.
           </p>
         </div>
-        <FooterCol title="Platform" items={["AI CEO Dashboard", "Multi-Agent System", "Analytics Engine", "Workflow Automation"]} />
+        <FooterCol
+          title="Platform"
+          items={[
+            "AI CEO Dashboard",
+            "Multi-Agent System",
+            "Analytics Engine",
+            "Workflow Automation",
+          ]}
+        />
         <FooterCol title="Company" items={["About Us", "Careers", "Security", "Contact Us"]} />
         <div className="space-y-3">
           <p className="text-sm font-semibold">Compliance</p>

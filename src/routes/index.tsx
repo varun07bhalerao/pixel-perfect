@@ -46,7 +46,8 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "SmartBPI — Autonomous Business Intelligence" },
       {
         property: "og:description",
-        content: "One AI operating system for revenue, inventory, finance, customers and workflows.",
+        content:
+          "One AI operating system for revenue, inventory, finance, customers and workflows.",
       },
     ],
   }),
@@ -100,8 +101,9 @@ function Hero() {
             Autonomous Business Intelligence &amp; Process Automation for Modern Enterprises
           </h1>
           <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
-            SmartBPI reads your sales, stock, cash and customer signals in real time, then recommends — and executes — the
-            next best action. One clean workspace instead of five disconnected systems.
+            SmartBPI reads your sales, stock, cash and customer signals in real time, then
+            recommends — and executes — the next best action. One clean workspace instead of five
+            disconnected systems.
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
@@ -124,7 +126,9 @@ function Hero() {
 
         <div className="surface-panel overflow-hidden shadow-elevated">
           <div className="flex items-center justify-between border-b border-border bg-canvas px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">AI CEO Dashboard — live preview</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              AI CEO Dashboard — live preview
+            </p>
             <StatusPill tone="success">Synced</StatusPill>
           </div>
           <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3">
@@ -151,12 +155,17 @@ function Hero() {
           </div>
           <div className="space-y-2 p-4">
             {criticalAlerts.slice(0, 2).map((alert) => (
-              <div key={alert.id} className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5">
+              <div
+                key={alert.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5"
+              >
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold">{alert.title}</p>
                   <p className="truncate text-[11px] text-muted-foreground">{alert.detail}</p>
                 </div>
-                <StatusPill tone={alert.severity === "critical" ? "danger" : "warning"}>{alert.action}</StatusPill>
+                <StatusPill tone={alert.severity === "critical" ? "danger" : "warning"}>
+                  {alert.action}
+                </StatusPill>
               </div>
             ))}
             <p className="pt-1 text-[11px] text-muted-foreground">
@@ -175,15 +184,18 @@ function AboutSection() {
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">About Us</p>
-          <h2 className="text-2xl font-bold sm:text-3xl">One AI operating system instead of five disconnected tools</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">
+            One AI operating system instead of five disconnected tools
+          </h2>
           <p className="text-muted-foreground">
-            Most companies run ERP, CRM, accounting, inventory and marketing analytics in separate silos, then spend the week
-            reconciling them. SmartBPI unifies those data streams into a single decision layer that works for retail, SaaS,
-            manufacturing and services alike.
+            Most companies run ERP, CRM, accounting, inventory and marketing analytics in separate
+            silos, then spend the week reconciling them. SmartBPI unifies those data streams into a
+            single decision layer that works for retail, SaaS, manufacturing and services alike.
           </p>
           <p className="text-muted-foreground">
-            Every module shares one business graph, so an inventory shortfall, a churn signal and a cash-flow gap are
-            understood as one connected story — with an audit trail on every automated action.
+            Every module shares one business graph, so an inventory shortfall, a churn signal and a
+            cash-flow gap are understood as one connected story — with an audit trail on every
+            automated action.
           </p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -209,11 +221,15 @@ function FeaturesSection() {
     <section id="features" className="border-b border-border">
       <div className="mx-auto max-w-7xl px-5 py-20">
         <div className="max-w-2xl space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Features &amp; Modules</p>
-          <h2 className="text-2xl font-bold sm:text-3xl">14 core operational modules, one workspace</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+            Features &amp; Modules
+          </p>
+          <h2 className="text-2xl font-bold sm:text-3xl">
+            14 core operational modules, one workspace
+          </h2>
           <p className="text-muted-foreground">
-            Each module ships with dashboards, tables and AI recommendations. Open the demo workspace to explore them with
-            realistic data.
+            Each module ships with dashboards, tables and AI recommendations. Open the demo
+            workspace to explore them with realistic data.
           </p>
         </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -251,11 +267,13 @@ function ContactSection() {
     <section id="contact" className="bg-canvas">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Contact Us</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">
+            Contact Us
+          </p>
           <h2 className="text-2xl font-bold sm:text-3xl">Talk to the SmartBPI team</h2>
           <p className="text-muted-foreground">
-            Tell us about your operation and we will map your modules, data sources and automation rules before your trial
-            starts.
+            Tell us about your operation and we will map your modules, data sources and automation
+            rules before your trial starts.
           </p>
           <div className="space-y-3 pt-2 text-sm text-muted-foreground">
             <p>hello@smartbpi.ai</p>
@@ -298,7 +316,12 @@ function ContactSection() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="message">Message</Label>
-            <Textarea id="message" rows={4} required placeholder="What would you like to automate first?" />
+            <Textarea
+              id="message"
+              rows={4}
+              required
+              placeholder="What would you like to automate first?"
+            />
           </div>
           <Button type="submit" size="lg" className="w-full">
             Send Message

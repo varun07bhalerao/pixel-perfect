@@ -11,9 +11,15 @@ export const Route = createFileRoute("/app/workflows")({
   head: () => ({
     meta: [
       { title: "Workflow Automation — SmartBPI" },
-      { name: "description", content: "Rule-based automations for purchase orders, reminders, escalations and digests." },
+      {
+        name: "description",
+        content: "Rule-based automations for purchase orders, reminders, escalations and digests.",
+      },
       { property: "og:title", content: "Workflow Automation — SmartBPI" },
-      { property: "og:description", content: "Turn repeating decisions into rules that run themselves." },
+      {
+        property: "og:description",
+        content: "Turn repeating decisions into rules that run themselves.",
+      },
     ],
   }),
   component: Workflows,
@@ -39,20 +45,34 @@ function Workflows() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Active rules" value={String(activeCount)} change={`${workflows.length} total`} hint="Live automations" />
+        <StatCard
+          label="Active rules"
+          value={String(activeCount)}
+          change={`${workflows.length} total`}
+          hint="Live automations"
+        />
         <StatCard label="Executions" value="232" change="+41" hint="Last 30 days" />
         <StatCard label="Success rate" value="99.1%" change="+0.3%" hint="No manual retries" />
         <StatCard label="Hours saved" value="126" change="+18" hint="Estimated" />
       </div>
 
-      <Panel title="Automation Rules" description="Toggle a rule off to pause it instantly" bodyClassName="p-0">
+      <Panel
+        title="Automation Rules"
+        description="Toggle a rule off to pause it instantly"
+        bodyClassName="p-0"
+      >
         <ul className="divide-y divide-border">
           {workflows.map((workflow) => (
-            <li key={workflow.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <li
+              key={workflow.id}
+              className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div className="min-w-0 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="font-mono text-xs text-muted-foreground">{workflow.id}</span>
-                  <StatusPill tone={state[workflow.id] ? "success" : "neutral"}>{state[workflow.id] ? "Active" : "Paused"}</StatusPill>
+                  <StatusPill tone={state[workflow.id] ? "success" : "neutral"}>
+                    {state[workflow.id] ? "Active" : "Paused"}
+                  </StatusPill>
                 </div>
                 <p className="text-sm font-medium">{workflow.name}</p>
                 <p className="text-xs text-muted-foreground">

@@ -10,7 +10,11 @@ export const Route = createFileRoute("/app/alerts")({
   head: () => ({
     meta: [
       { title: "Smart Alerts — SmartBPI" },
-      { name: "description", content: "Priority-ranked alerts for stock, churn risk, overdue payments and unusual transactions." },
+      {
+        name: "description",
+        content:
+          "Priority-ranked alerts for stock, churn risk, overdue payments and unusual transactions.",
+      },
       { property: "og:title", content: "Smart Alerts — SmartBPI" },
       { property: "og:description", content: "One ranked list of what actually needs attention." },
     ],
@@ -28,14 +32,22 @@ function Alerts() {
         title="Smart Alerts"
         description="Every operational and financial signal, grouped by category and ranked by severity."
         actions={
-          <Button variant="outline" onClick={() => toast.success("Alert digest sent to your inbox.")}>
+          <Button
+            variant="outline"
+            onClick={() => toast.success("Alert digest sent to your inbox.")}
+          >
             <BellRing className="size-4" /> Email digest
           </Button>
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Open alerts" value={String(smartAlerts.length - resolved.length)} change={`${resolved.length} resolved`} hint="Across categories" />
+        <StatCard
+          label="Open alerts"
+          value={String(smartAlerts.length - resolved.length)}
+          change={`${resolved.length} resolved`}
+          hint="Across categories"
+        />
         <StatCard label="Critical" value="6" change="+2" trend="down" hint="Inventory" />
         <StatCard label="High" value="20" change="+4" trend="down" hint="Churn & receivables" />
         <StatCard label="Medium" value="3" change="-1" hint="Transaction review" />
@@ -49,7 +61,11 @@ function Alerts() {
               key={alert.category}
               title={alert.category}
               description={`${alert.count} affected records`}
-              actions={<StatusPill tone={done ? "success" : toneForStatus(alert.severity)}>{done ? "Resolved" : alert.severity}</StatusPill>}
+              actions={
+                <StatusPill tone={done ? "success" : toneForStatus(alert.severity)}>
+                  {done ? "Resolved" : alert.severity}
+                </StatusPill>
+              }
             >
               <p className="text-sm text-muted-foreground">{alert.detail}</p>
               <div className="mt-4 flex flex-wrap gap-2">
@@ -63,7 +79,11 @@ function Alerts() {
                 >
                   {done ? "Handled" : "Resolve"}
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => toast.success(`Escalated: ${alert.category}`)}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => toast.success(`Escalated: ${alert.category}`)}
+                >
                   Escalate
                 </Button>
               </div>

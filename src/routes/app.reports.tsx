@@ -12,7 +12,10 @@ export const Route = createFileRoute("/app/reports")({
   head: () => ({
     meta: [
       { title: "Reports & Analytics — SmartBPI" },
-      { name: "description", content: "Build modular business reports with date-range filters and CSV or PDF export." },
+      {
+        name: "description",
+        content: "Build modular business reports with date-range filters and CSV or PDF export.",
+      },
       { property: "og:title", content: "Reports & Analytics — SmartBPI" },
       { property: "og:description", content: "Pick a report, set the range, export." },
     ],
@@ -40,21 +43,32 @@ function Reports() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Report templates" value={String(reportTypes.length)} change="All modules" hint="Ready to run" />
+        <StatCard
+          label="Report templates"
+          value={String(reportTypes.length)}
+          change="All modules"
+          hint="Ready to run"
+        />
         <StatCard label="Generated this month" value="38" change="+12" hint="Across the team" />
         <StatCard label="Scheduled" value="4" change="Weekly" hint="Auto-delivered" />
         <StatCard label="Avg. build time" value="2.4 s" change="-0.6 s" hint="Simulated" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <Panel title="Report Generator" description="Choose a module and range" className="xl:col-span-2">
+        <Panel
+          title="Report Generator"
+          description="Choose a module and range"
+          className="xl:col-span-2"
+        >
           <div className="grid gap-3 sm:grid-cols-2">
             {reportTypes.map((report) => (
               <button
                 key={report.name}
                 onClick={() => setSelected(report.name)}
                 className={`rounded-lg border p-4 text-left transition-colors ${
-                  selected === report.name ? "border-primary bg-primary-soft" : "border-border bg-canvas hover:border-primary/40"
+                  selected === report.name
+                    ? "border-primary bg-primary-soft"
+                    : "border-border bg-canvas hover:border-primary/40"
                 }`}
               >
                 <p className="text-sm font-semibold">{report.name}</p>
@@ -66,11 +80,21 @@ function Reports() {
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label htmlFor="from">From</Label>
-              <Input id="from" type="date" value={from} onChange={(event) => setFrom(event.target.value)} />
+              <Input
+                id="from"
+                type="date"
+                value={from}
+                onChange={(event) => setFrom(event.target.value)}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="to">To</Label>
-              <Input id="to" type="date" value={to} onChange={(event) => setTo(event.target.value)} />
+              <Input
+                id="to"
+                type="date"
+                value={to}
+                onChange={(event) => setTo(event.target.value)}
+              />
             </div>
           </div>
 
@@ -78,7 +102,10 @@ function Reports() {
             <Button onClick={() => toast.success(`${selected} exported as CSV (${from} → ${to}).`)}>
               <FileSpreadsheet className="size-4" /> Export CSV
             </Button>
-            <Button variant="outline" onClick={() => toast.success(`${selected} exported as PDF (${from} → ${to}).`)}>
+            <Button
+              variant="outline"
+              onClick={() => toast.success(`${selected} exported as PDF (${from} → ${to}).`)}
+            >
               <FileDown className="size-4" /> Export PDF
             </Button>
             <StatusPill tone="primary">Exports are simulated</StatusPill>

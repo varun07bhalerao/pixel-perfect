@@ -3,7 +3,14 @@ import { toast } from "sonner";
 import { Download, Plus } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { PageHeader, Panel, StatCard, StatusPill, toneForStatus } from "@/components/app-ui";
 import { currency, orders, receivables, revenueByLine } from "@/lib/mock-data";
 
@@ -11,9 +18,15 @@ export const Route = createFileRoute("/app/sales")({
   head: () => ({
     meta: [
       { title: "Sales & Revenue Management — SmartBPI" },
-      { name: "description", content: "Orders, invoices, payment status and revenue breakdown by line." },
+      {
+        name: "description",
+        content: "Orders, invoices, payment status and revenue breakdown by line.",
+      },
       { property: "og:title", content: "Sales & Revenue Management — SmartBPI" },
-      { property: "og:description", content: "Track every order and invoice from one revenue workspace." },
+      {
+        property: "og:description",
+        content: "Track every order and invoice from one revenue workspace.",
+      },
     ],
   }),
   component: Sales,
@@ -41,12 +54,23 @@ function Sales() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Revenue MTD" value="$536K" change="+5.5%" hint="vs previous month" />
         <StatCard label="Avg order value" value="$4,120" change="+2.8%" hint="1,284 orders" />
-        <StatCard label="Pending payments" value="$96.2K" change="+1.4%" trend="down" hint="14 invoices" />
+        <StatCard
+          label="Pending payments"
+          value="$96.2K"
+          change="+1.4%"
+          trend="down"
+          hint="14 invoices"
+        />
         <StatCard label="Overdue" value="$214.3K" change="+8.7%" trend="down" hint="11 invoices" />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <Panel title="Recent Orders" description="Latest activity across all channels" className="xl:col-span-2" bodyClassName="p-0">
+        <Panel
+          title="Recent Orders"
+          description="Latest activity across all channels"
+          className="xl:col-span-2"
+          bodyClassName="p-0"
+        >
           <Table>
             <TableHeader>
               <TableRow>
@@ -65,7 +89,9 @@ function Sales() {
                   <TableCell>{order.customer}</TableCell>
                   <TableCell className="text-muted-foreground">{order.channel}</TableCell>
                   <TableCell className="text-right tabular-nums">{order.items}</TableCell>
-                  <TableCell className="text-right tabular-nums">{currency(order.amount)}</TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {currency(order.amount)}
+                  </TableCell>
                   <TableCell>
                     <StatusPill tone={toneForStatus(order.status)}>{order.status}</StatusPill>
                   </TableCell>
@@ -80,7 +106,13 @@ function Sales() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueByLine} margin={{ left: -14, right: 8, top: 8 }}>
                 <CartesianGrid stroke="var(--color-border)" vertical={false} />
-                <XAxis dataKey="name" stroke="var(--color-muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
+                <XAxis
+                  dataKey="name"
+                  stroke="var(--color-muted-foreground)"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
                 <YAxis
                   stroke="var(--color-muted-foreground)"
                   fontSize={12}
@@ -89,10 +121,19 @@ function Sales() {
                   tickFormatter={(value: number) => `$${Math.round(value / 1000)}K`}
                 />
                 <Tooltip
-                  contentStyle={{ borderRadius: 12, border: "1px solid var(--color-border)", fontSize: 12 }}
+                  contentStyle={{
+                    borderRadius: 12,
+                    border: "1px solid var(--color-border)",
+                    fontSize: 12,
+                  }}
                   formatter={(value: number) => currency(value)}
                 />
-                <Bar dataKey="value" name="Revenue" fill="var(--color-chart-1)" radius={[6, 6, 0, 0]} />
+                <Bar
+                  dataKey="value"
+                  name="Revenue"
+                  fill="var(--color-chart-1)"
+                  radius={[6, 6, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>

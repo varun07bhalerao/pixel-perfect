@@ -71,7 +71,9 @@ export function AppTopbar({
           <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuLabel>
               <p className="text-sm font-semibold">{name}</p>
-              <p className="text-xs font-normal text-muted-foreground">{session?.email ?? "demo@smartbpi.ai"}</p>
+              <p className="text-xs font-normal text-muted-foreground">
+                {session?.email ?? "demo@smartbpi.ai"}
+              </p>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={() => toast.info("Profile settings are simulated.")}>

@@ -3,7 +3,14 @@ import { toast } from "sonner";
 import { Sparkles, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader, Panel, StatCard, StatusPill, toneForStatus } from "@/components/app-ui";
 import { currency, products, purchaseOrders, stockMovements, suppliers } from "@/lib/mock-data";
@@ -12,9 +19,16 @@ export const Route = createFileRoute("/app/inventory")({
   head: () => ({
     meta: [
       { title: "Inventory Management — SmartBPI" },
-      { name: "description", content: "Stock levels, movement logs, suppliers, purchase orders and AI demand prediction." },
+      {
+        name: "description",
+        content:
+          "Stock levels, movement logs, suppliers, purchase orders and AI demand prediction.",
+      },
       { property: "og:title", content: "Inventory Management — SmartBPI" },
-      { property: "og:description", content: "Keep every SKU above its reorder point with predicted demand." },
+      {
+        property: "og:description",
+        content: "Keep every SKU above its reorder point with predicted demand.",
+      },
     ],
   }),
   component: Inventory,
@@ -38,12 +52,28 @@ function Inventory() {
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="SKUs tracked" value="482" change="+12" hint="6 categories" />
-        <StatCard label="Below threshold" value={String(low.length)} change="+2" trend="down" hint="Reorder required" />
+        <StatCard
+          label="Below threshold"
+          value={String(low.length)}
+          change="+2"
+          trend="down"
+          hint="Reorder required"
+        />
         <StatCard label="Stock value" value="$1.28M" change="+3.2%" hint="On-hand at cost" />
-        <StatCard label="Avg stock cover" value="34 days" change="-4 days" trend="down" hint="Weighted by velocity" />
+        <StatCard
+          label="Avg stock cover"
+          value="34 days"
+          change="-4 days"
+          trend="down"
+          hint="Weighted by velocity"
+        />
       </div>
 
-      <Panel title="Product Catalog" description="Stock level against minimum threshold with AI predicted demand" bodyClassName="p-0">
+      <Panel
+        title="Product Catalog"
+        description="Stock level against minimum threshold with AI predicted demand"
+        bodyClassName="p-0"
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -64,12 +94,21 @@ function Inventory() {
                 <TableCell>
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className={product.stock < product.min ? "font-semibold text-destructive" : "font-medium"}>
+                      <span
+                        className={
+                          product.stock < product.min
+                            ? "font-semibold text-destructive"
+                            : "font-medium"
+                        }
+                      >
                         {product.stock} units
                       </span>
                       <span className="text-muted-foreground">min {product.min}</span>
                     </div>
-                    <Progress value={Math.min((product.stock / (product.min * 3)) * 100, 100)} className="h-1.5" />
+                    <Progress
+                      value={Math.min((product.stock / (product.min * 3)) * 100, 100)}
+                      className="h-1.5"
+                    />
                   </div>
                 </TableCell>
                 <TableCell className="text-right tabular-nums">{currency(product.price)}</TableCell>
@@ -110,7 +149,9 @@ function Inventory() {
                     <TableCell className="font-medium">{move.id}</TableCell>
                     <TableCell className="font-mono text-xs">{move.sku}</TableCell>
                     <TableCell>
-                      <StatusPill tone={move.type === "In" ? "success" : "warning"}>{move.type}</StatusPill>
+                      <StatusPill tone={move.type === "In" ? "success" : "warning"}>
+                        {move.type}
+                      </StatusPill>
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{move.qty}</TableCell>
                     <TableCell className="text-muted-foreground">{move.ref}</TableCell>
