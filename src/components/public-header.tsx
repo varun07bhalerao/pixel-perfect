@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandBadge } from "@/components/brand";
 
@@ -10,11 +12,14 @@ const navLinks = [
 ];
 
 export function PublicHeader() {
+  const [open, setOpen] = useState(false);
   return (
-    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-5">
-        <BrandBadge />
-        <nav className="hidden items-center gap-1 md:flex">
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-5">
+        <div className="min-w-0 shrink-0">
+          <BrandBadge />
+        </div>
+        <nav className="hidden items-center gap-1 lg:flex">
           {navLinks.map((item) => (
             <a
               key={item.hash}
@@ -25,15 +30,35 @@ export function PublicHeader() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/login">Log In</Link>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button asChild size="sm" className="whitespace-nowrap px-4">
+            <Link to="/login">Login / Signup</Link>
           </Button>
-          <Button asChild size="sm">
-            <Link to="/signup">Get Started Free</Link>
+          <Button
+            variant="outline"
+            size="icon"
+            className="size-9 lg:hidden"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="size-4" /> : <Menu className="size-4" />}
           </Button>
         </div>
       </div>
+      {open && (
+        <nav className="border-t border-border bg-background px-4 py-3 lg:hidden">
+          {navLinks.map((item) => (
+            <a
+              key={item.hash}
+              href={`/#${item.hash}`}
+              onClick={() => setOpen(false)}
+              className="block rounded-md px-3 py-3 text-base font-medium text-foreground hover:bg-muted"
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }
