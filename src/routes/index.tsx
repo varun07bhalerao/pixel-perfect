@@ -96,7 +96,7 @@ function Hero() {
           <StatusPill tone="primary">
             <Sparkles className="size-3" /> 14 modules · 6 autonomous agents
           </StatusPill>
-          <h1 className="text-4xl font-extrabold leading-[1.08] sm:text-5xl lg:text-[3.4rem]">
+          <h1 className="text-[2rem] font-extrabold leading-[1.1] sm:text-5xl lg:text-[3.4rem]">
             Autonomous Business Intelligence &amp; Process Automation for Modern Enterprises
           </h1>
           <p className="max-w-xl text-base text-muted-foreground sm:text-lg">
@@ -175,7 +175,7 @@ function AboutSection() {
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-2">
         <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">About Us</p>
-          <h2 className="text-3xl font-bold">One AI operating system instead of five disconnected tools</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">One AI operating system instead of five disconnected tools</h2>
           <p className="text-muted-foreground">
             Most companies run ERP, CRM, accounting, inventory and marketing analytics in separate silos, then spend the week
             reconciling them. SmartBPI unifies those data streams into a single decision layer that works for retail, SaaS,
@@ -210,7 +210,7 @@ function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-5 py-20">
         <div className="max-w-2xl space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Features &amp; Modules</p>
-          <h2 className="text-3xl font-bold">14 core operational modules, one workspace</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">14 core operational modules, one workspace</h2>
           <p className="text-muted-foreground">
             Each module ships with dashboards, tables and AI recommendations. Open the demo workspace to explore them with
             realistic data.
@@ -252,7 +252,7 @@ function ContactSection() {
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-20 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-4">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-primary">Contact Us</p>
-          <h2 className="text-3xl font-bold">Talk to the SmartBPI team</h2>
+          <h2 className="text-2xl font-bold sm:text-3xl">Talk to the SmartBPI team</h2>
           <p className="text-muted-foreground">
             Tell us about your operation and we will map your modules, data sources and automation rules before your trial
             starts.
