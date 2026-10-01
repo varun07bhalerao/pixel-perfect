@@ -28,6 +28,7 @@ import {
 import { BrandBadge } from "@/components/brand";
 import {
   getOnboarding,
+  getOnboardingProfileAsync,
   saveOnboarding,
   onAuthStateChange,
   isOnboardingCompleted,
@@ -41,12 +42,12 @@ export const Route = createFileRoute("/onboarding")({
       { title: "Business setup — SmartBPI" },
       {
         name: "description",
-        content: "Configure your business owner, business details, operations and governance.",
+        content: "Configure your business owner and business details.",
       },
       { property: "og:title", content: "Business setup — SmartBPI" },
       {
         property: "og:description",
-        content: "Complete your 5-step setup to launch your AI workspace.",
+        content: "Complete your 2-step setup to launch your AI workspace.",
       },
     ],
   }),
@@ -56,17 +57,6 @@ export const Route = createFileRoute("/onboarding")({
 const steps = [
   { title: "Business Owner", detail: "Tell us about the person responsible for this business." },
   { title: "Business Details", detail: "Tell us about your business." },
-  { title: "Business Profile", detail: "Who you are and how big you run." },
-  { title: "Operations & Data", detail: "Where sales happen and how stock moves." },
-  { title: "Governance & Thresholds", detail: "The limits your agents must respect." },
-];
-
-const channelOptions = [
-  "Direct sales",
-  "E-commerce",
-  "Marketplace",
-  "Retail stores",
-  "Partners / resellers",
 ];
 
 const businessTypeOptions = [
@@ -168,6 +158,8 @@ const indianStates = [
   "Puducherry",
 ];
 
+import { uploadUdyamToSupabase } from "@/lib/supabase";
+
 function Onboarding() {
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
@@ -178,62 +170,93 @@ function Onboarding() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState<OnboardingProfile>(() => {
-    const saved = getOnboarding();
     return {
       // Step 1: Business Owner
-      ownerName: saved?.ownerName || "",
-      ownerEmail: saved?.ownerEmail || "",
-      ownerPhone: saved?.ownerPhone || "",
-      ownerAge: saved?.ownerAge || "",
-      ownerGender: saved?.ownerGender || "",
-      ownerRole: saved?.ownerRole || "Owner",
-      yearsOfExperience: saved?.yearsOfExperience || "",
-      preferredLanguage: saved?.preferredLanguage || "English",
+      ownerName: "",
+      ownerEmail: "",
+      ownerPhone: "",
+      ownerAge: "",
+      ownerGender: "",
+      ownerRole: "Owner",
+      yearsOfExperience: "",
+      preferredLanguage: "English",
 
       // Step 2: Business Details
-      businessName: saved?.businessName || "",
-      businessType: saved?.businessType || "",
-      industry: saved?.industry || "",
-      address: saved?.address || "",
-      city: saved?.city || "",
-      state: saved?.state || "",
-      pincode: saved?.pincode || "",
-      udyamCertificateUrl: saved?.udyamCertificateUrl || "",
-      udyamCertificateName: saved?.udyamCertificateName || "",
-      gstNumber: saved?.gstNumber || "",
-      annualRevenue: saved?.annualRevenue || saved?.revenue || "",
-      employeeCount: saved?.employeeCount || "",
-      establishedYear: saved?.establishedYear || "",
-      website: saved?.website || "",
-      description: saved?.description || "",
+      businessName: "",
+      businessType: "",
+      industry: "",
+      address: "",
+      city: "",
+      state: "",
+      pincode: "",
+      udyamCertificateUrl: "",
+      udyamCertificateName: "",
+      gstNumber: "",
+      annualRevenue: "",
+      employeeCount: "",
+      establishedYear: "",
+      website: "",
+      description: "",
 
-      // Step 3: Business Profile
-      currency: saved?.currency || "INR",
-      revenue: saved?.revenue || saved?.annualRevenue || "",
-
-      // Step 4: Operations & Data
-      channels: saved?.channels || [],
-      inventoryModel: saved?.inventoryModel || "",
-      volume: saved?.volume || "",
-
-      // Step 5: Governance & Thresholds
-      approvalLimit: saved?.approvalLimit || "50000",
-      lowStockLevel: saved?.lowStockLevel || "15",
-      growthTarget: saved?.growthTarget || "20",
+      // Defaults for background compatibility
+      currency: "INR",
+      revenue: "",
+      channels: [],
+      inventoryModel: "",
+      volume: "",
+      approvalLimit: "50000",
+      lowStockLevel: "15",
+      growthTarget: "20",
     };
   });
 
-  // Check auth and auto-populate user data from Firebase Auth
+  // Check auth and fetch logged-in user data
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((currentSession) => {
+    const unsubscribe = onAuthStateChange(async (currentSession) => {
       if (currentSession) {
         setSession(currentSession);
-        setForm((prev) => ({
-          ...prev,
-          ownerName: prev.ownerName || currentSession.name || "",
-          ownerEmail: prev.ownerEmail || currentSession.email || "",
-          ownerPhone: prev.ownerPhone || currentSession.phone || "",
-        }));
+        
+        // Fetch saved onboarding data specifically for THIS user
+        const saved = await getOnboardingProfileAsync(currentSession.uid);
+
+        setForm({
+          // Step 1: Business Owner - force logged-in email and user details
+          ownerName: saved?.ownerName || currentSession.name || "",
+          ownerEmail: currentSession.email || saved?.ownerEmail || "",
+          ownerPhone: saved?.ownerPhone || currentSession.phone || "",
+          ownerAge: saved?.ownerAge || "",
+          ownerGender: saved?.ownerGender || "",
+          ownerRole: saved?.ownerRole || "Owner",
+          yearsOfExperience: saved?.yearsOfExperience || "",
+          preferredLanguage: saved?.preferredLanguage || "English",
+
+          // Step 2: Business Details
+          businessName: saved?.businessName || "",
+          businessType: saved?.businessType || "",
+          industry: saved?.industry || "",
+          address: saved?.address || "",
+          city: saved?.city || "",
+          state: saved?.state || "",
+          pincode: saved?.pincode || "",
+          udyamCertificateUrl: saved?.udyamCertificateUrl || "",
+          udyamCertificateName: saved?.udyamCertificateName || "",
+          gstNumber: saved?.gstNumber || "",
+          annualRevenue: saved?.annualRevenue || saved?.revenue || "",
+          employeeCount: saved?.employeeCount || "",
+          establishedYear: saved?.establishedYear || "",
+          website: saved?.website || "",
+          description: saved?.description || "",
+
+          // Defaults for background compatibility
+          currency: saved?.currency || "INR",
+          revenue: saved?.revenue || saved?.annualRevenue || "",
+          channels: saved?.channels || [],
+          inventoryModel: saved?.inventoryModel || "",
+          volume: saved?.volume || "",
+          approvalLimit: saved?.approvalLimit || "50000",
+          lowStockLevel: saved?.lowStockLevel || "15",
+          growthTarget: saved?.growthTarget || "20",
+        });
 
         // If user already completed onboarding, redirect to dashboard
         isOnboardingCompleted(currentSession.uid).then((isDone) => {
@@ -249,7 +272,7 @@ function Onboarding() {
   const update = <K extends keyof OnboardingProfile>(key: K, value: OnboardingProfile[K]) => {
     setForm((prev) => {
       const next = { ...prev, [key]: value };
-      // Keep annualRevenue and revenue in sync across steps
+      // Keep annualRevenue and revenue in sync
       if (key === "annualRevenue") {
         next.revenue = value as string;
       } else if (key === "revenue") {
@@ -295,52 +318,11 @@ function Onboarding() {
     form.udyamCertificateName, // Certificate uploaded
   );
 
-  const isStep2Valid = Boolean(
-    form.businessName.trim() &&
-    form.industry &&
-    form.currency &&
-    (form.revenue || form.annualRevenue),
-  );
-
-  const isStep3Valid = Boolean(form.channels.length > 0 && form.inventoryModel && form.volume);
-
-  const isStep4Valid = Boolean(
-    form.approvalLimit.trim() &&
-    Number(form.approvalLimit) >= 0 &&
-    form.lowStockLevel.trim() &&
-    Number(form.lowStockLevel) >= 0 &&
-    form.growthTarget.trim() &&
-    Number(form.growthTarget) >= 0,
-  );
-
-  const canAdvance =
-    step === 0
-      ? isStep0Valid
-      : step === 1
-        ? isStep1Valid
-        : step === 2
-          ? isStep2Valid
-          : step === 3
-            ? isStep3Valid
-            : isStep4Valid;
+  const canAdvance = step === 0 ? isStep0Valid : isStep1Valid;
 
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    // Validate type: CSV or Excel only (.csv, .xlsx, .xls)
-    const validExtensions = [".csv", ".xlsx", ".xls"];
-    const fileExtension = file.name.substring(file.name.lastIndexOf(".")).toLowerCase();
-    const isCsvOrExcel =
-      validExtensions.includes(fileExtension) ||
-      file.type === "text/csv" ||
-      file.type === "application/vnd.ms-excel" ||
-      file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-    if (!isCsvOrExcel) {
-      toast.error("Please upload a .csv or Excel (.xlsx, .xls) file only.");
-      return;
-    }
 
     // Validate size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
@@ -350,13 +332,13 @@ function Onboarding() {
 
     setUploadingFile(true);
     try {
-      // Keep it client-side without storing to external storage
-      await new Promise((r) => setTimeout(r, 200));
-      update("udyamCertificateUrl", "");
+      // Upload file to Supabase storage
+      const uploadResult = await uploadUdyamToSupabase(file, session?.uid || "guest");
+      update("udyamCertificateUrl", uploadResult.url);
       update("udyamCertificateName", file.name);
-      toast.success(`"${file.name}" uploaded successfully.`);
+      toast.success(`"${file.name}" uploaded to storage successfully.`);
     } catch (error: unknown) {
-      toast.error(error instanceof Error ? error.message : "Failed to process file.");
+      toast.error(error instanceof Error ? error.message : "Failed to upload file.");
     } finally {
       setUploadingFile(false);
       if (fileInputRef.current) {
@@ -368,7 +350,7 @@ function Onboarding() {
   function handleRemoveCertificate() {
     update("udyamCertificateUrl", "");
     update("udyamCertificateName", "");
-    toast.info("File removed. Please attach a valid .csv or Excel file.");
+    toast.info("File removed. Please attach your document file.");
   }
 
   async function submit() {
@@ -391,7 +373,7 @@ function Onboarding() {
       {/* Top Header */}
       <header className="flex h-16 items-center justify-between px-5">
         <BrandBadge />
-        <span className="text-xs font-medium text-muted-foreground">Step {step + 1} of 5</span>
+        <span className="text-xs font-medium text-muted-foreground">Step {step + 1} of 2</span>
       </header>
 
       {/* Main Container */}
@@ -400,10 +382,10 @@ function Onboarding() {
           {/* Progress Header */}
           <div className="space-y-3">
             <h1 className="text-2xl font-bold">Set up your business</h1>
-            <Progress value={((step + 1) / 5) * 100} className="h-1.5" />
+            <Progress value={((step + 1) / 2) * 100} className="h-1.5" />
 
-            {/* 5-Step Progress Indicators */}
-            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            {/* 2-Step Progress Indicators */}
+            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2">
               {steps.map((item, index) => (
                 <div
                   key={item.title}
@@ -689,10 +671,10 @@ function Onboarding() {
                 {/* Udyam Registration Certificate Upload */}
                 <Field
                   label="Udyam Registration File *"
-                  hint="Upload file in .csv or Excel (.xlsx, .xls) format (up to 10MB)"
+                  hint="Upload any document format (e.g. PDF, CSV, Excel, Images, DOCX - up to 10MB)"
                   error={
                     isTouched("udyam") && !form.udyamCertificateName
-                      ? "Udyam registration file (.csv or Excel) is required"
+                      ? "Udyam registration file is required"
                       : undefined
                   }
                 >
@@ -700,7 +682,6 @@ function Onboarding() {
                     type="file"
                     ref={fileInputRef}
                     onChange={handleFileUpload}
-                    accept=".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     className="hidden"
                     id="udyam-upload"
                   />
@@ -753,7 +734,7 @@ function Onboarding() {
                       {uploadingFile ? (
                         <div className="flex flex-col items-center gap-2">
                           <Loader2 className="size-8 animate-spin text-primary" />
-                          <p className="text-sm font-medium">Processing file...</p>
+                          <p className="text-sm font-medium">Uploading file to storage...</p>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2">
@@ -766,7 +747,7 @@ function Onboarding() {
                               drag and drop
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              CSV or Excel (.xlsx, .xls) (max 10MB)
+                              Any document format (max 10MB)
                             </p>
                           </div>
                         </div>
@@ -850,177 +831,6 @@ function Onboarding() {
               </div>
             )}
 
-            {/* ============================================================== */}
-            {/* STEP 3: BUSINESS PROFILE (EXISTING STEP 1)                     */}
-            {/* ============================================================== */}
-            {step === 2 && (
-              <div className="space-y-5">
-                <div className="space-y-1 border-b border-border pb-3">
-                  <h2 className="text-base font-semibold">Business Profile</h2>
-                  <p className="text-xs text-muted-foreground">Who you are and how big you run.</p>
-                </div>
-
-                <Field label="Business Name">
-                  <Input
-                    value={form.businessName}
-                    onChange={(event) => update("businessName", event.target.value)}
-                    placeholder="Northwind Industries"
-                  />
-                </Field>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Field label="Industry">
-                    <Picker
-                      value={form.industry}
-                      onChange={(value) => update("industry", value)}
-                      options={industryOptions}
-                      placeholder="Select industry"
-                    />
-                  </Field>
-                  <Field label="Currency">
-                    <Picker
-                      value={form.currency}
-                      onChange={(value) => update("currency", value)}
-                      options={["INR", "USD", "EUR", "GBP", "AED"]}
-                      placeholder="Select currency"
-                    />
-                  </Field>
-                </div>
-
-                <Field label="Annual Revenue">
-                  <Picker
-                    value={form.annualRevenue || form.revenue}
-                    onChange={(value) => update("annualRevenue", value)}
-                    options={revenueBracketOptions}
-                    placeholder="Select revenue bracket"
-                  />
-                </Field>
-              </div>
-            )}
-
-            {/* ============================================================== */}
-            {/* STEP 4: OPERATIONS & DATA (EXISTING STEP 2)                    */}
-            {/* ============================================================== */}
-            {step === 3 && (
-              <div className="space-y-5">
-                <div className="space-y-1 border-b border-border pb-3">
-                  <h2 className="text-base font-semibold">Operations & Data</h2>
-                  <p className="text-xs text-muted-foreground">
-                    Where sales happen and how stock moves.
-                  </p>
-                </div>
-
-                <Field label="Primary Sales Channels">
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {channelOptions.map((channel) => {
-                      const active = form.channels.includes(channel);
-                      return (
-                        <label
-                          key={channel}
-                          className={`flex cursor-pointer items-center gap-2.5 rounded-lg border px-3 py-2.5 text-sm transition-colors ${
-                            active
-                              ? "border-primary bg-primary-soft text-foreground"
-                              : "border-border bg-background"
-                          }`}
-                        >
-                          <Checkbox
-                            checked={active}
-                            onCheckedChange={(checked) =>
-                              update(
-                                "channels",
-                                checked
-                                  ? [...form.channels, channel]
-                                  : form.channels.filter((c) => c !== channel),
-                              )
-                            }
-                          />
-                          {channel}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </Field>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Field label="Inventory Model">
-                    <Picker
-                      value={form.inventoryModel}
-                      onChange={(value) => update("inventoryModel", value)}
-                      options={[
-                        "Own warehouse",
-                        "3PL / outsourced",
-                        "Just-in-time",
-                        "Dropshipping",
-                        "No inventory",
-                      ]}
-                      placeholder="Select model"
-                    />
-                  </Field>
-                  <Field label="Monthly Transaction Volume">
-                    <Picker
-                      value={form.volume}
-                      onChange={(value) => update("volume", value)}
-                      options={["Under 500", "500 – 5,000", "5,000 – 50,000", "50,000+"]}
-                      placeholder="Select volume"
-                    />
-                  </Field>
-                </div>
-              </div>
-            )}
-
-            {/* ============================================================== */}
-            {/* STEP 5: GOVERNANCE & THRESHOLDS (EXISTING STEP 3)              */}
-            {/* ============================================================== */}
-            {step === 4 && (
-              <div className="space-y-5">
-                <div className="space-y-1 border-b border-border pb-3">
-                  <h2 className="text-base font-semibold">Governance & Thresholds</h2>
-                  <p className="text-xs text-muted-foreground">
-                    The limits your agents must respect.
-                  </p>
-                </div>
-
-                <Field
-                  label="Manager Approval Limit"
-                  hint="Payments above this amount route to the approval queue."
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-muted-foreground">
-                      {form.currency}
-                    </span>
-                    <Input
-                      type="number"
-                      min={0}
-                      value={form.approvalLimit}
-                      onChange={(event) => update("approvalLimit", event.target.value)}
-                    />
-                  </div>
-                </Field>
-
-                <div className="grid gap-5 sm:grid-cols-2">
-                  <Field
-                    label="Low Stock Alert Level"
-                    hint="Units remaining before a reorder alert fires."
-                  >
-                    <Input
-                      type="number"
-                      min={0}
-                      value={form.lowStockLevel}
-                      onChange={(event) => update("lowStockLevel", event.target.value)}
-                    />
-                  </Field>
-                  <Field label="Annual Growth Target (%)">
-                    <Input
-                      type="number"
-                      min={0}
-                      value={form.growthTarget}
-                      onChange={(event) => update("growthTarget", event.target.value)}
-                    />
-                  </Field>
-                </div>
-              </div>
-            )}
-
             {/* Navigation Buttons */}
             <div className="flex items-center justify-between border-t border-border pt-5">
               <Button
@@ -1031,7 +841,7 @@ function Onboarding() {
                 <ArrowLeft className="size-4" /> Back
               </Button>
 
-              {step < 4 ? (
+              {step < 1 ? (
                 <Button
                   disabled={!canAdvance || uploadingFile}
                   onClick={() => setStep((prev) => prev + 1)}

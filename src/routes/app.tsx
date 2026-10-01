@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { AppTopbar } from "@/components/app-topbar";
 import {
-  getOnboarding,
+  getOnboardingProfileAsync,
   onAuthStateChange,
   type MockSession,
   type OnboardingProfile,
@@ -22,13 +22,14 @@ function AppLayout() {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChange((current) => {
+    const unsubscribe = onAuthStateChange(async (current) => {
       if (!current) {
         navigate({ to: "/login", replace: true });
         return;
       }
       setSession(current);
-      setProfile(getOnboarding());
+      const userProfile = await getOnboardingProfileAsync(current.uid);
+      setProfile(userProfile);
       setChecked(true);
     });
     return () => unsubscribe();

@@ -27,12 +27,25 @@ import {
 } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: (import.meta.env["VITE_FIREBASE_API_KEY"] as string | undefined) || "dummy-api-key",
-  authDomain: (import.meta.env["VITE_FIREBASE_AUTH_DOMAIN"] as string | undefined) || "dummy-auth-domain",
-  projectId: (import.meta.env["VITE_FIREBASE_PROJECT_ID"] as string | undefined) || "dummy-project-id",
-  storageBucket: (import.meta.env["VITE_FIREBASE_STORAGE_BUCKET"] as string | undefined) || "dummy-storage-bucket",
-  messagingSenderId: (import.meta.env["VITE_FIREBASE_MESSAGING_SENDER_ID"] as string | undefined) || "dummy-sender-id",
-  appId: (import.meta.env["VITE_FIREBASE_APP_ID"] as string | undefined) || "dummy-app-id",
+  apiKey:
+    (import.meta.env["VITE_FIREBASE_API_KEY"] as string | undefined) ||
+    "AIzaSyDrTdL-SpROC4L8lB1A7PYpQNu3oulkBL8",
+  authDomain:
+    (import.meta.env["VITE_FIREBASE_AUTH_DOMAIN"] as string | undefined) ||
+    "final-business-os.firebaseapp.com",
+  projectId:
+    (import.meta.env["VITE_FIREBASE_PROJECT_ID"] as string | undefined) || "final-business-os",
+  storageBucket:
+    (import.meta.env["VITE_FIREBASE_STORAGE_BUCKET"] as string | undefined) ||
+    "final-business-os.firebasestorage.app",
+  messagingSenderId:
+    (import.meta.env["VITE_FIREBASE_MESSAGING_SENDER_ID"] as string | undefined) ||
+    "674679983378",
+  appId:
+    (import.meta.env["VITE_FIREBASE_APP_ID"] as string | undefined) ||
+    "1:674679983378:web:9bb63fad24e8301fc5f7cb",
+  measurementId:
+    (import.meta.env["VITE_FIREBASE_MEASUREMENT_ID"] as string | undefined) || "G-1QHRC3Z226",
 };
 
 const existingApp = getApps()[0];
@@ -168,9 +181,45 @@ function safeParse<T>(raw: string | null): T | null {
   }
 }
 
-export function getOnboarding(): OnboardingProfile | null {
+export function getOnboarding(uid?: string): OnboardingProfile | null {
   if (typeof window === "undefined") return null;
-  return safeParse<OnboardingProfile>(window.localStorage.getItem(ONBOARDING_KEY));
+  const currentUid = uid || auth.currentUser?.uid;
+  if (currentUid) {
+    const userSpecific = safeParse<OnboardingProfile>(
+      window.localStorage.getItem(`${ONBOARDING_KEY}_${currentUid}`),
+    );
+    if (userSpecific) return userSpecific;
+  }
+  const generic = safeParse<OnboardingProfile>(window.localStorage.getItem(ONBOARDING_KEY));
+  if (generic && currentUid && generic.userId && generic.userId !== currentUid) {
+    return null;
+  }
+  return generic;
+}
+
+export async function getOnboardingProfileAsync(uid?: string): Promise<OnboardingProfile | null> {
+  const currentUid = uid || auth.currentUser?.uid;
+  if (!currentUid) return getOnboarding();
+
+  const local = getOnboarding(currentUid);
+  if (local && (local.userId === currentUid || !local.userId)) return local;
+
+  if (db) {
+    try {
+      const bizDoc = await getDoc(doc(db, "businesses", currentUid));
+      if (bizDoc.exists()) {
+        const data = bizDoc.data() as OnboardingProfile;
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(`${ONBOARDING_KEY}_${currentUid}`, JSON.stringify(data));
+        }
+        return data;
+      }
+    } catch (e) {
+      console.warn("Error fetching business profile from Firestore:", e);
+    }
+  }
+
+  return local;
 }
 
 export async function saveOnboarding(profile: OnboardingProfile, userSession?: MockSession | null) {
