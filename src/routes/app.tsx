@@ -6,9 +6,11 @@ import { AppTopbar } from "@/components/app-topbar";
 import {
   getOnboardingProfileAsync,
   onAuthStateChange,
+  isUserVerified,
   type MockSession,
   type OnboardingProfile,
 } from "@/lib/auth";
+import { ServiceSetupModal } from "@/components/service-setup-modal";
 
 export const Route = createFileRoute("/app")({
   ssr: false,
@@ -29,6 +31,11 @@ function AppLayout() {
       }
       setSession(current);
       const userProfile = await getOnboardingProfileAsync(current.uid);
+      const verified = await isUserVerified(current.uid);
+      if (!verified) {
+        navigate({ to: "/onboarding", replace: true });
+        return;
+      }
       setProfile(userProfile);
       setChecked(true);
     });
@@ -46,6 +53,7 @@ function AppLayout() {
         <SidebarInset className="bg-canvas">
           <AppTopbar session={session} profile={profile} />
           <main className="mx-auto w-full max-w-[1500px] space-y-6 p-5 lg:p-7">
+            {profile && <ServiceSetupModal profile={profile} session={session} />}
             <Outlet />
           </main>
         </SidebarInset>

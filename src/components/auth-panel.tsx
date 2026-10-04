@@ -12,6 +12,7 @@ import {
   signupWithEmail,
   signInWithGoogle,
   isOnboardingCompleted,
+  isUserVerified,
 } from "@/lib/auth";
 
 export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
@@ -43,7 +44,13 @@ export function AuthPanel({ mode }: { mode: "login" | "signup" }) {
 
       const isDone = await isOnboardingCompleted(userUid);
       if (isDone) {
-        navigate({ to: "/app/dashboard" });
+        const verified = await isUserVerified(userUid);
+        if (verified) {
+          toast.success("Profile is verified");
+          navigate({ to: "/app/dashboard" });
+        } else {
+          navigate({ to: "/onboarding" });
+        }
       } else {
         navigate({ to: "/onboarding" });
       }

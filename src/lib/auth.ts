@@ -166,10 +166,28 @@ export type OnboardingProfile = {
   lowStockLevel: string;
   growthTarget: string;
 
+  // App Setup (Post-Verification)
+  servicesChecklist?: {
+    salesPredictions?: boolean;
+    salesAndRevenue?: boolean;
+    inventoryManagement?: boolean;
+    financeManagement?: boolean;
+    marketingIntelligence?: boolean;
+  } | undefined;
+  servicesData?: {
+    salesCsvUrl?: string;
+    inventoryCsvUrl?: string;
+  } | undefined;
+  servicesSetupComplete?: boolean | undefined;
+
   // Metadata
   completed?: boolean | undefined;
   completedAt?: string | undefined;
   userId?: string | undefined;
+  isVerified?: boolean | undefined;
+  status?: "pending" | "queried" | "verified" | undefined;
+  adminQuery?: string | undefined;
+  queriedFields?: string[] | undefined;
 };
 
 function safeParse<T>(raw: string | null): T | null {
@@ -229,6 +247,10 @@ export async function saveOnboarding(profile: OnboardingProfile, userSession?: M
     userId: currentUid,
     completed: true,
     completedAt: new Date().toISOString(),
+    isVerified: false,
+    status: "pending",
+    adminQuery: "",
+    queriedFields: [],
   };
 
   if (typeof window !== "undefined") {
@@ -296,6 +318,10 @@ export async function saveOnboarding(profile: OnboardingProfile, userSession?: M
           growthTarget: profile.growthTarget,
 
           onboardingCompleted: true,
+          isVerified: false,
+          status: "pending",
+          adminQuery: "",
+          queriedFields: [],
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         },
@@ -315,6 +341,44 @@ export async function saveOnboarding(profile: OnboardingProfile, userSession?: M
   }
 
   return updatedProfile;
+}
+
+export async function saveServiceSetup(
+  profile: OnboardingProfile,
+  servicesChecklist: OnboardingProfile["servicesChecklist"],
+  servicesData: OnboardingProfile["servicesData"],
+  userSession?: MockSession | null
+) {
+  const currentUid = userSession?.uid || auth.currentUser?.uid || "demo-user";
+  const updatedProfile: OnboardingProfile = {
+    ...profile,
+    servicesChecklist,
+    servicesData,
+    servicesSetupComplete: true,
+  };
+
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(`${ONBOARDING_KEY}_${currentUid}`, JSON.stringify(updatedProfile));
+  }
+
+  const currentUser = auth.currentUser;
+  if (currentUser && db) {
+    try {
+      const businessRef = doc(db, "businesses", currentUid);
+      await setDoc(
+        businessRef,
+        {
+          servicesChecklist: servicesChecklist || {},
+          servicesData: servicesData || {},
+          servicesSetupComplete: true,
+          updatedAt: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } catch (e) {
+      console.warn("Error saving service setup to Firestore:", e);
+    }
+  }
 }
 
 export async function isOnboardingCompleted(uid?: string): Promise<boolean> {
@@ -358,6 +422,22 @@ export async function isOnboardingCompleted(uid?: string): Promise<boolean> {
   return false;
 }
 
+export async function isUserVerified(uid?: string): Promise<boolean> {
+  const currentUid = uid || auth.currentUser?.uid;
+  if (!currentUid) return false;
+  if (db) {
+    try {
+      const bizDoc = await getDoc(doc(db, "businesses", currentUid));
+      if (bizDoc.exists() && bizDoc.data()?.["isVerified"] === true) {
+        return true;
+      }
+    } catch (err) {
+      console.warn("Firestore verify check failed:", err);
+    }
+  }
+  return false;
+}
+
 export async function uploadUdyamCertificate(
   file: File,
   uid?: string,
@@ -365,6 +445,38 @@ export async function uploadUdyamCertificate(
   const currentUid = uid || auth.currentUser?.uid || "user";
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
   const storagePath = `documents/${currentUid}/udyam_${Date.now()}_${safeName}`;
+
+  if (storage) {
+    try {
+      const storageRef = ref(storage, storagePath);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadUrl = await getDownloadURL(snapshot.ref);
+      return { url: downloadUrl, name: file.name };
+    } catch (err) {
+      console.warn("Firebase Storage upload fallback to local storage:", err);
+    }
+  }
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      resolve({ url: reader.result as string, name: file.name });
+    };
+    reader.onerror = () => {
+      resolve({ url: URL.createObjectURL(file), name: file.name });
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function uploadServiceDataCsv(
+  file: File,
+  type: "sales" | "inventory",
+  uid?: string,
+): Promise<{ url: string; name: string }> {
+  const currentUid = uid || auth.currentUser?.uid || "user";
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const storagePath = `service_data/${currentUid}/${type}_${Date.now()}_${safeName}`;
 
   if (storage) {
     try {

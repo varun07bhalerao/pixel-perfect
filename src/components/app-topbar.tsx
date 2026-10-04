@@ -80,7 +80,10 @@ export function AppTopbar({
               <UserRound className="size-4" /> Profile
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => navigate({ to: "/onboarding" })}>
-              <Settings className="size-4" /> Business setup
+              <Settings className="size-4 mr-2" /> Business setup
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => { window.location.hash = "manage-services"; }}>
+              <Settings className="size-4 mr-2" /> Manage Services
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem

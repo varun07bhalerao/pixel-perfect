@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pandas
+numpy
+statsmodels
+requests
+pydantic
+PyJWT
+firebase-admin
+python-dotenv
+python-multipart

@@ -11,6 +11,7 @@ import {
   X,
   AlertCircle,
   FileText,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +33,8 @@ import {
   saveOnboarding,
   onAuthStateChange,
   isOnboardingCompleted,
+  isUserVerified,
+  signOut,
   type MockSession,
   type OnboardingProfile,
 } from "@/lib/auth";
@@ -166,6 +169,7 @@ function Onboarding() {
   const [session, setSession] = useState<MockSession | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(true);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -258,16 +262,51 @@ function Onboarding() {
           growthTarget: saved?.growthTarget || "20",
         });
 
-        // If user already completed onboarding, redirect to dashboard
-        isOnboardingCompleted(currentSession.uid).then((isDone) => {
+        // If user already completed onboarding, redirect to dashboard or show pending approval
+        isOnboardingCompleted(currentSession.uid).then(async (isDone) => {
           if (isDone && !window.location.search.includes("edit=true")) {
-            // navigate({ to: "/app/dashboard" });
+            try {
+              const { db } = await import("@/lib/auth");
+              const { doc, getDoc } = await import("firebase/firestore");
+              if (db) {
+                const bizDoc = await getDoc(doc(db, "businesses", currentSession.uid));
+                if (bizDoc.exists()) {
+                  const data = bizDoc.data() as OnboardingProfile;
+                  if (data.isVerified) {
+                    navigate({ to: "/app/dashboard", replace: true });
+                    return;
+                  } else if (data.status === "queried") {
+                    setForm(prev => ({ ...prev, ...data, queriedFields: data.queriedFields, adminQuery: data.adminQuery }));
+                    setStep(3);
+                    setCheckingStatus(false);
+                    return;
+                  }
+                }
+              }
+            } catch (err) {
+              console.error(err);
+            }
+            setStep(2);
+            setCheckingStatus(false);
+          } else {
+            setCheckingStatus(false);
           }
         });
       }
     });
     return () => unsubscribe();
   }, [navigate]);
+
+  if (checkingStatus) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-canvas">
+        <div className="flex flex-col items-center gap-4">
+          <div className="size-8 animate-spin rounded-full border-4 border-primary border-r-transparent" />
+          <p className="text-sm font-medium text-muted-foreground">Checking status...</p>
+        </div>
+      </div>
+    );
+  }
 
   const update = <K extends keyof OnboardingProfile>(key: K, value: OnboardingProfile[K]) => {
     setForm((prev) => {
@@ -358,9 +397,9 @@ function Onboarding() {
     try {
       await saveOnboarding(form, session);
       toast.success(
-        `${form.businessName || "Your business"} is configured — your AI workspace is live.`,
+        `${form.businessName || "Your business"} details submitted. Pending admin approval.`,
       );
-      navigate({ to: "/app/dashboard" });
+      setStep(2);
     } catch (error: unknown) {
       toast.error(error instanceof Error ? error.message : "Failed to finalize business setup.");
     } finally {
@@ -831,37 +870,165 @@ function Onboarding() {
               </div>
             )}
 
-            {/* Navigation Buttons */}
-            <div className="flex items-center justify-between border-t border-border pt-5">
-              <Button
-                variant="ghost"
-                disabled={step === 0 || isSubmitting}
-                onClick={() => setStep((prev) => prev - 1)}
-              >
-                <ArrowLeft className="size-4" /> Back
-              </Button>
-
-              {step < 1 ? (
-                <Button
-                  disabled={!canAdvance || uploadingFile}
-                  onClick={() => setStep((prev) => prev + 1)}
+            {/* ============================================================== */}
+            {/* STEP 3: PENDING APPROVAL                                       */}
+            {/* ============================================================== */}
+            {step === 2 && (
+              <div className="flex flex-col items-center justify-center space-y-6 py-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="flex size-20 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 shadow-sm">
+                  <Check className="size-10" />
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-bold">Details Submitted</h2>
+                  <p className="text-muted-foreground max-w-sm mx-auto">
+                    All details and documents are submitted to admin. After approval, the next process will begin.
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  onClick={() => signOut().then(() => navigate({ to: "/" }))}
                 >
-                  Continue <ArrowRight className="size-4" />
+                  Return to Home
                 </Button>
-              ) : (
-                <Button disabled={!canAdvance || isSubmitting} onClick={submit}>
+              </div>
+            )}
+
+            {/* ============================================================== */}
+            {/* STEP 4: ACTION REQUIRED (QUERY)                                */}
+            {/* ============================================================== */}
+            {step === 3 && (
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-lg space-y-2">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="size-5" />
+                    <h3 className="font-semibold text-lg">Action Required</h3>
+                  </div>
+                  <p className="text-sm">The admin has requested clarification or corrections regarding your submission:</p>
+                  <p className="text-sm bg-white p-3 rounded border border-amber-100 font-medium whitespace-pre-wrap">{form.adminQuery}</p>
+                </div>
+
+                <div className="space-y-4 pt-2">
+                  <h4 className="font-medium">Please update the following fields:</h4>
+                  
+                  {form.queriedFields?.map((field) => (
+                    <div key={field} className="surface-panel p-4 shadow-sm border border-border">
+                      {field === "businessName" && (
+                        <Field label="Business Name">
+                          <Input value={form.businessName} onChange={(e) => update("businessName", e.target.value)} />
+                        </Field>
+                      )}
+                      {field === "businessType" && (
+                        <Field label="Business Type">
+                          <Picker value={form.businessType} onChange={(v) => update("businessType", v)} options={businessTypeOptions} placeholder="Select type" />
+                        </Field>
+                      )}
+                      {field === "industry" && (
+                        <Field label="Industry">
+                          <Picker value={form.industry} onChange={(v) => update("industry", v)} options={industryOptions} placeholder="Select industry" />
+                        </Field>
+                      )}
+                      {field === "address" && (
+                        <Field label="Address & Location">
+                          <Textarea value={form.address} onChange={(e) => update("address", e.target.value)} placeholder="Full Address" className="mb-2" />
+                          <div className="grid grid-cols-2 gap-4">
+                            <Input value={form.city} onChange={(e) => update("city", e.target.value)} placeholder="City" />
+                            <Input value={form.pincode} onChange={(e) => update("pincode", e.target.value)} placeholder="Pincode" />
+                          </div>
+                        </Field>
+                      )}
+                      {field === "gstNumber" && (
+                        <Field label="GST Number">
+                          <Input value={form.gstNumber} onChange={(e) => update("gstNumber", e.target.value)} />
+                        </Field>
+                      )}
+                      {field === "annualRevenue" && (
+                        <Field label="Annual Revenue">
+                          <Picker value={form.annualRevenue} onChange={(v) => update("annualRevenue", v)} options={revenueBracketOptions} placeholder="Select revenue" />
+                        </Field>
+                      )}
+                      {field === "ownerName" && (
+                        <Field label="Owner Name">
+                          <Input value={form.ownerName} onChange={(e) => update("ownerName", e.target.value)} />
+                        </Field>
+                      )}
+                      {field === "ownerPhone" && (
+                        <Field label="Owner Phone">
+                          <Input type="tel" value={form.ownerPhone} onChange={(e) => update("ownerPhone", e.target.value)} />
+                        </Field>
+                      )}
+                      {field === "udyamCertificateUrl" && (
+                        <Field label="Udyam Certificate Document">
+                           <div className="flex flex-col gap-2">
+                             <Input
+                               type="file"
+                               ref={fileInputRef}
+                               accept=".pdf,image/png,image/jpeg"
+                               onChange={handleFileUpload}
+                               disabled={uploadingFile}
+                             />
+                             {form.udyamCertificateName && (
+                               <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                 <CheckCircle2 className="size-3 text-emerald-500" /> Current file: {form.udyamCertificateName}
+                               </p>
+                             )}
+                           </div>
+                        </Field>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="flex items-center justify-end border-t border-border pt-5">
+                <Button disabled={isSubmitting || uploadingFile} onClick={submit}>
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="size-4 animate-spin mr-1" /> Saving...
+                      <Loader2 className="size-4 animate-spin mr-1" /> Resubmitting...
                     </>
                   ) : (
                     <>
-                      Finish setup <Check className="size-4" />
+                      Resubmit Details <Check className="size-4" />
                     </>
                   )}
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
+
+            {/* Navigation Buttons */}
+            {step < 2 && (
+              <div className="flex items-center justify-between border-t border-border pt-5">
+                <Button
+                  variant="ghost"
+                  disabled={step === 0 || isSubmitting}
+                  onClick={() => setStep((prev) => prev - 1)}
+                >
+                  <ArrowLeft className="size-4" /> Back
+                </Button>
+
+                {step < 1 ? (
+                  <Button
+                    disabled={!canAdvance || uploadingFile}
+                    onClick={() => setStep((prev) => prev + 1)}
+                  >
+                    Continue <ArrowRight className="size-4" />
+                  </Button>
+                ) : (
+                  <Button disabled={!canAdvance || isSubmitting} onClick={submit}>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="size-4 animate-spin mr-1" /> Saving...
+                      </>
+                    ) : (
+                      <>
+                        Finish setup <Check className="size-4" />
+                      </>
+                    )}
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </main>

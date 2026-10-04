@@ -78,3 +78,47 @@ export async function uploadUdyamToSupabase(
     path: filePath,
   };
 }
+
+export async function uploadServiceDataToSupabase(
+  file: File,
+  type: "sales" | "inventory",
+  uid: string,
+): Promise<{ url: string; name: string; path: string }> {
+  const cleanFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const filePath = `${uid}/${type}_${Date.now()}_${cleanFileName}`;
+  const bucket = "service-data";
+
+  if (!supabase || !isSupabaseConfigured) {
+    throw new Error(
+      "Supabase is not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.",
+    );
+  }
+
+  console.log(`[Supabase] Uploading "${file.name}" to bucket "${bucket}" at path "${filePath}"...`);
+
+  const { data, error } = await supabase.storage.from(bucket).upload(filePath, file, {
+    cacheControl: "3600",
+    upsert: true,
+  });
+
+  if (error) {
+    if (error.message?.includes("Bucket not found") || error.message?.includes("bucket")) {
+      throw new Error(
+        `Supabase bucket "${bucket}" not found. Please create it in Supabase → Storage → New Bucket (name: "service-data", set to Public).`,
+      );
+    }
+    throw new Error(`Supabase upload failed: ${error.message}`);
+  }
+
+  if (!data) {
+    throw new Error("Supabase upload returned no data. The file may not have been saved.");
+  }
+
+  const { data: publicUrlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
+
+  return {
+    url: publicUrlData.publicUrl,
+    name: file.name,
+    path: filePath,
+  };
+}
